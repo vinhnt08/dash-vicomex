@@ -1,0 +1,717 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vicomex - Logistics Control Tower</title>
+  <!-- Material Symbols -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0,0" />
+  <!-- Stylesheets -->
+  <link rel="stylesheet" href="styles/base.css" />
+  <link rel="stylesheet" href="styles/layout.css" />
+  <link rel="stylesheet" href="styles/components.css" />
+  <link rel="stylesheet" href="styles/animations.css" />
+</head>
+<body>
+<div class="app">
+
+  <!-- Floating Rail (Desktop) -->
+  <nav class="rail" aria-label="Main Navigation">
+    <div class="rail__logo">VICOMEX</div>
+    
+    <ul class="rail__nav" role="list">
+      <li>
+        <a class="nav-item active" role="button" tabindex="0" data-view="dashboard" data-tooltip="Dashboard">
+          <span class="material-symbols-outlined">dashboard</span>
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="orders" data-tooltip="Luồng Vận Hành">
+          <span class="material-symbols-outlined">route</span>
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="resources" data-tooltip="Nghiệp Vụ">
+          <span class="material-symbols-outlined">precision_manufacturing</span>
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="costs" data-tooltip="Chi Phí & Nguồn Lực">
+          <span class="material-symbols-outlined">finance</span>
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="data" data-tooltip="Dữ Liệu Hệ Thống">
+          <span class="material-symbols-outlined">database</span>
+        </a>
+      </li>
+    </ul>
+
+    <div class="rail__footer">
+      <div class="rail__avatar">AD</div>
+    </div>
+  </nav>
+
+  <!-- Mobile Bottom Dock -->
+  <nav class="bottom-dock" aria-label="Mobile Navigation">
+    <a class="dock-item active" role="button" data-view="dashboard">
+      <span class="material-symbols-outlined">dashboard</span>
+      <span>Dash</span>
+    </a>
+    <a class="dock-item" role="button" data-view="orders">
+      <span class="material-symbols-outlined">route</span>
+      <span>Orders</span>
+    </a>
+    <a class="dock-item" role="button" data-view="resources">
+      <span class="material-symbols-outlined">precision_manufacturing</span>
+      <span>Ops</span>
+    </a>
+    <a class="dock-item" role="button" data-view="costs">
+      <span class="material-symbols-outlined">finance</span>
+      <span>Costs</span>
+    </a>
+    <a class="dock-item" role="button" data-view="data">
+      <span class="material-symbols-outlined">database</span>
+      <span>Data</span>
+    </a>
+  </nav>
+
+  <!-- Main Area -->
+  <div class="main">
+
+    <!-- Topbar -->
+    <header class="topbar">
+      <h1 class="topbar__title">Control Tower</h1>
+      <div class="topbar__actions">
+        <div class="search-box">
+          <span class="material-symbols-outlined">search</span>
+          <input type="text" placeholder="Tìm kiếm container, xe..." aria-label="Search" />
+        </div>
+        <button class="icon-btn" aria-label="Notifications">
+          <span class="material-symbols-outlined">notifications</span>
+          <span class="badge"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- VIEWS -->
+
+    <!-- 1. DASHBOARD -->
+    <div class="view active" id="view-dashboard">
+      <main class="page">
+        <!-- Stats Row -->
+        <div class="grid-4 anim-stagger" style="margin-bottom: var(--space-24)">
+          <div class="card stat-card" id="stat-output"></div>
+          <div class="card stat-card" id="stat-progress"></div>
+          <div class="card stat-card" id="stat-resources"></div>
+          <div class="card stat-card" id="stat-clients"></div>
+        </div>
+
+        <div class="grid-layout">
+          <div class="stack stack--24">
+            <!-- Map -->
+            <div class="card map-card" style="padding:0">
+              <div class="card__header" style="padding:16px 24px; margin:0; border-bottom:1px solid var(--color-border)">
+                <h2 class="card__title"><span class="material-symbols-outlined text-cyan">public</span> Giám sát lộ trình</h2>
+              </div>
+              <div class="map-container">
+                <div class="map-inner">
+                  <svg width="100%" height="100%" viewBox="0 0 800 400" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Cyperpunk Map Visuals -->
+                    <rect width="100%" height="100%" fill="transparent"/>
+                    <path d="M50 300 Q200 200 400 250 T750 150" stroke="var(--color-border)" stroke-width="2" fill="none" stroke-dasharray="4"/>
+                    <path d="M100 100 Q300 150 500 100 T700 250" stroke="var(--color-border)" stroke-width="1" fill="none" stroke-dasharray="2"/>
+                    <!-- Active Route -->
+                    <path d="M100 100 Q300 150 500 100 T700 250" stroke="var(--color-accent-cyan)" stroke-width="3" fill="none"/>
+                    <!-- Hubs -->
+                    <circle cx="100" cy="100" r="8" fill="var(--color-accent-purple)" />
+                    <circle cx="500" cy="100" r="12" fill="none" stroke="var(--color-accent-cyan)" stroke-width="2"/>
+                    <circle cx="500" cy="100" r="4" fill="var(--color-accent-cyan)" />
+                    <circle cx="700" cy="250" r="8" fill="var(--color-accent-emerald)" />
+                  </svg>
+                  <div class="map-overlay">
+                    <div class="map-dot map-dot--primary" style="top:35%;left:45%"></div>
+                    <div class="map-dot map-dot--error"   style="top:50%;left:70%"></div>
+                    <div class="map-dot map-dot--success" style="top:25%;left:20%"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Queue Table -->
+            <div class="card" style="padding:0">
+              <div class="card__header" style="padding:16px 24px; margin:0; border-bottom:1px solid var(--color-border)">
+                <h2 class="card__title">Chuyến chờ điều phối</h2>
+                <button class="btn btn--primary btn--compact" id="btn-auto-route">
+                  <span class="material-symbols-outlined">auto_awesome</span> Đề xuất AI
+                </button>
+              </div>
+              <div class="table-wrap">
+                <table class="table">
+                  <thead><tr><th>Mã Cont</th><th>Loại luồng</th><th>Trạng thái</th><th class="right">Action</th></tr></thead>
+                  <tbody id="dispatch-tbody"></tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+
+          <div class="stack stack--24">
+            <!-- Quick Actions -->
+            <div class="card">
+              <h2 class="card__title card__title--sep">Nghiệp Vụ Nhanh</h2>
+              <div class="stack stack--12">
+                <button class="action-card" data-modal="modal-cat-mooc">
+                  <div class="action-card__icon"><span class="material-symbols-outlined">fork_right</span></div>
+                  <div><div class="action-card__title">Cắt Mooc</div><div class="action-card__desc">Đổi đầu kéo, lưu cont</div></div>
+                </button>
+                <button class="action-card" data-modal="modal-ha-cont">
+                  <div class="action-card__icon"><span class="material-symbols-outlined">download</span></div>
+                  <div><div class="action-card__title">Hạ Cont</div><div class="action-card__desc">Hạ tại Hub chuyên dụng</div></div>
+                </button>
+                <button class="action-card" data-modal="modal-swap-cont">
+                  <div class="action-card__icon"><span class="material-symbols-outlined">swap_horiz</span></div>
+                  <div><div class="action-card__title">Swap Cont</div><div class="action-card__desc">Ghép cont 20ft</div></div>
+                </button>
+              </div>
+            </div>
+
+            <!-- Alerts -->
+            <div class="card">
+              <h2 class="card__title card__title--sep text-warning">
+                <span class="material-symbols-outlined">warning</span> Cảnh Báo
+              </h2>
+              <div class="stack stack--12" id="alert-list"></div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 2. ORDER MANAGEMENT -->
+    <div class="view" id="view-orders">
+      <main class="page">
+        <div class="page-header">
+          <div>
+            <h2 class="page-header__title">Luồng Vận Hành</h2>
+            <p class="page-header__subtitle">Theo dõi import/export container flows.</p>
+          </div>
+          <button class="btn btn--primary" data-modal="modal-create-order">
+            <span class="material-symbols-outlined">add</span> Tạo Lệnh
+          </button>
+        </div>
+
+        <div class="grid-4 anim-stagger" id="flow-cards" style="margin-bottom:var(--space-24)"></div>
+
+        <div class="card" style="padding:0">
+          <div class="card__header" style="padding:16px 24px; margin:0; border-bottom:1px solid var(--color-border); flex-wrap:wrap; gap:16px;">
+            <div class="tabs" style="margin:0">
+              <button class="tab active" data-tab="import">Nhập Khẩu</button>
+              <button class="tab" data-tab="export">Xuất Khẩu</button>
+            </div>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead>
+                <tr><th>Mã Cont</th><th>Khách hàng</th><th>Luồng</th><th>Lộ trình</th><th>Trạng thái</th><th class="right">Chi tiết</th></tr>
+              </thead>
+              <tbody id="container-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 3. RESOURCE MANAGEMENT (Kanban) -->
+    <div class="view" id="view-resources">
+      <main class="page">
+        <div class="page-header">
+          <div>
+            <h2 class="page-header__title">Nghiệp Vụ Kỹ Thuật</h2>
+            <p class="page-header__subtitle">Kanban board điều phối cắt, hạ, swap cont.</p>
+          </div>
+          <button class="btn btn--primary" data-modal="modal-new-order">
+            <span class="material-symbols-outlined">add</span> Tạo Lệnh Nghiệp Vụ
+          </button>
+        </div>
+
+        <div class="kanban-board">
+          <!-- Cắt Mooc -->
+          <div class="kanban-col">
+            <div class="kanban-col__header">
+              <div class="kanban-col__title"><span class="material-symbols-outlined text-cyan">fork_right</span> Cắt Mooc</div>
+              <span class="kanban-col__count">3 Lệnh</span>
+            </div>
+            <div class="kanban-col__body" id="kanban-cat-mooc"></div>
+          </div>
+          <!-- Hạ Cont -->
+          <div class="kanban-col">
+            <div class="kanban-col__header">
+              <div class="kanban-col__title"><span class="material-symbols-outlined text-purple">download</span> Hạ Cont</div>
+              <span class="kanban-col__count">2 Lệnh</span>
+            </div>
+            <div class="kanban-col__body" id="kanban-ha-cont"></div>
+          </div>
+          <!-- Swap Cont -->
+          <div class="kanban-col">
+            <div class="kanban-col__header">
+              <div class="kanban-col__title"><span class="material-symbols-outlined text-emerald">swap_horiz</span> Swap Cont</div>
+              <span class="kanban-col__count">2 Lệnh</span>
+            </div>
+            <div class="kanban-col__body" id="kanban-swap-cont"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 4. COSTS -->
+    <div class="view" id="view-costs">
+      <main class="page">
+        <div class="page-header">
+          <h2 class="page-header__title">Chi Phí & Nguồn Lực</h2>
+        </div>
+
+        <div class="grid-3 anim-stagger" style="margin-bottom:var(--space-24)">
+          <div class="card stat-card">
+            <div class="stat-card__icon" style="background:rgba(0,240,255,0.1);color:var(--color-accent-cyan)"><span class="material-symbols-outlined">local_shipping</span></div>
+            <div class="stat-card__value">50</div>
+            <div class="stat-card__label">Đầu kéo hoạt động</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-card__icon" style="background:rgba(176,38,255,0.1);color:var(--color-accent-purple)"><span class="material-symbols-outlined">rv_hookup</span></div>
+            <div class="stat-card__value">100</div>
+            <div class="stat-card__label">Rơ mooc các loại</div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-card__icon" style="background:rgba(0,255,157,0.1);color:var(--color-accent-emerald)"><span class="material-symbols-outlined">engineering</span></div>
+            <div class="stat-card__value">6</div>
+            <div class="stat-card__label">Xe chuyên dụng tại Hub</div>
+          </div>
+        </div>
+
+        <div class="grid-3 anim-stagger" id="cost-hub-list" style="margin-bottom:var(--space-32)"></div>
+
+        <div class="card" style="padding:0; margin-bottom:var(--space-32)">
+          <div class="card__header" style="padding:16px 24px; margin:0; border-bottom:1px solid var(--color-border)">
+            <h3 class="card__title">Chi phí phát sinh tại Hub</h3>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Hub</th><th>Lệnh/Tháng</th><th>Phí Hạ</th><th>Phí Lưu</th><th>Tổng Chi Phí</th></tr></thead>
+              <tbody id="hub-costs-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card" style="padding:0">
+          <div class="card__header" style="padding:16px 24px; margin:0; border-bottom:1px solid var(--color-border)">
+            <h3 class="card__title">Bảng Lương Tài Xế</h3>
+          </div>
+          <div class="table-wrap">
+            <table class="table">
+              <thead><tr><th>Tên Tài xế</th><th>Đội</th><th>Số Chuyến</th><th>Điểm Lấy/Trả</th><th>Phụ Phí</th><th>Tổng Lương</th><th class="right">Action</th></tr></thead>
+              <tbody id="driver-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+      </main>
+    </div>
+
+    <!-- 5. SYSTEM DATA -->
+    <div class="view" id="view-data">
+      <main class="page">
+        <div class="page-header">
+          <h2 class="page-header__title">Dữ Liệu Hệ Thống</h2>
+        </div>
+
+        <div class="tabs">
+          <button class="tab active" data-sys-tab="trailers">Xe & Mooc</button>
+          <button class="tab" data-sys-tab="hubs">Danh mục Hub</button>
+          <button class="tab" data-sys-tab="clients">Khách Hàng</button>
+        </div>
+
+        <div data-sys-panel="trailers">
+          <div class="card" style="padding:0">
+            <div class="card__header" style="padding:16px 24px; margin:0; border-bottom:1px solid var(--color-border); justify-content:flex-end">
+              <button class="btn btn--primary btn--compact"><span class="material-symbols-outlined">add</span> Thêm Thiết Bị</button>
+            </div>
+            <div class="table-wrap">
+              <table class="table">
+                <thead><tr><th>Mã Thiết Bị</th><th>Phân loại</th><th>Số Trục</th><th>Tải Trọng</th><th>Trạng thái</th><th class="right">Hành động</th></tr></thead>
+                <tbody id="trailer-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div data-sys-panel="hubs" hidden>
+          <div class="grid-3 anim-stagger" id="hub-preview"></div>
+        </div>
+
+        <div data-sys-panel="clients" hidden>
+          <div class="card" style="padding:0">
+            <div id="client-list"></div>
+          </div>
+        </div>
+      </main>
+    </div>
+
+  </div> <!-- /main -->
+</div> <!-- /app -->
+
+<!-- MODALS -->
+
+<!-- 1. Assign -->
+<div class="overlay" id="modal-assign">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title">Phân công Container</h2>
+      <button class="modal__close js-modal-close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal__body">
+      <div class="input-group">
+        <label>Tài xế</label>
+        <select class="select">
+          <option>Nguyễn Văn A - Đội 1</option>
+          <option>Trần Văn B - Đội 2</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label>Đầu kéo</label>
+        <select class="select"><option>51H-12345</option></select>
+      </div>
+      <div class="input-group">
+        <label>Rơ mooc</label>
+        <select class="select"><option>SIR-01 (1 trục)</option></select>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Hủy</button>
+      <button class="btn btn--primary">Phân Công</button>
+    </div>
+  </div>
+</div>
+
+<!-- 2. Auto Route -->
+<div class="overlay" id="modal-auto-route">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title">AI Đề Xuất Lộ Trình</h2>
+      <button class="modal__close js-modal-close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal__body">
+      <div class="alert alert--info"><span class="material-symbols-outlined">smart_toy</span> <p>Phân tích dữ liệu traffic và slot bãi để đề xuất.</p></div>
+      <div id="route-suggestions" class="stack stack--16"></div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Đóng</button>
+      <button class="btn btn--primary">Chấp nhận tất cả</button>
+    </div>
+  </div>
+</div>
+
+<!-- 3. Cắt Mooc -->
+<div class="overlay" id="modal-cat-mooc" role="dialog" aria-modal="true" aria-labelledby="modal-cat-title">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title" id="modal-cat-title">Duyệt Lệnh Cắt Mooc &amp; Lưu Hub</h2>
+      <button class="modal__close js-modal-close" aria-label="Đóng">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div class="alert alert--warning">
+        <span class="material-symbols-outlined">error</span>
+        <p>Tài xế Nguyễn Văn A đang trong khung giờ cấm cảng. Cần cắt mooc và bố trí đầu kéo mới.</p>
+      </div>
+      <div class="input-group">
+        <label for="cat-hub">Hub lưu mooc</label>
+        <select class="select" id="cat-hub">
+          <option>Hub KCN Lớn</option>
+          <option>Hub KCN 2</option>
+          <option>Hub KCN 3</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="cat-driver-new">Đầu kéo mới</label>
+        <select class="select" id="cat-driver-new">
+          <option>Trần Văn B – 51H-67890</option>
+          <option>Lê Văn C – 51H-11122</option>
+        </select>
+      </div>
+      <div class="alert alert--info">
+        <span class="material-symbols-outlined">info</span>
+        <p>Chi phí phát sinh: +150,000 VNĐ (phí cắt mooc) + 100,000 VNĐ/ngày (lưu Hub)</p>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Hủy</button>
+      <button class="btn btn--primary">Xác nhận Cắt Mooc</button>
+    </div>
+  </div>
+</div>
+
+<!-- 4. Hạ Cont -->
+<div class="overlay" id="modal-ha-cont" role="dialog" aria-modal="true" aria-labelledby="modal-ha-title">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title" id="modal-ha-title">Duyệt Lệnh Hạ Cont tại Hub</h2>
+      <button class="modal__close js-modal-close" aria-label="Đóng">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div class="input-group">
+        <label>Mã Container</label>
+        <input class="input" type="text" value="#445566" readonly />
+      </div>
+      <div class="input-group">
+        <label for="ha-hub">Hub hạ cont</label>
+        <select class="select" id="ha-hub">
+          <option>Hub KCN Lớn – Xe chuyên dụng sẵn có</option>
+          <option>Hub KCN 2 – 1 xe chuyên dụng</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="ha-reason">Lý do hạ</label>
+        <select class="select" id="ha-reason">
+          <option>Thiếu rơ mooc – Lấy mooc đi chuyến khác</option>
+          <option>Đóng cont sớm chờ nộp cảng</option>
+          <option>Khác</option>
+        </select>
+      </div>
+      <div class="alert alert--warning">
+        <span class="material-symbols-outlined">error</span>
+        <p>Chi phí phát sinh: +150,000 VNĐ (phí hạ) + 100,000 VNĐ/ngày (lưu cont)</p>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Hủy</button>
+      <button class="btn btn--primary">Xác nhận Hạ Cont</button>
+    </div>
+  </div>
+</div>
+
+<!-- 5. Swap Cont -->
+<div class="overlay" id="modal-swap-cont" role="dialog" aria-modal="true" aria-labelledby="modal-swap-title">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title" id="modal-swap-title">Tiến hành Swap Cont</h2>
+      <button class="modal__close js-modal-close" aria-label="Đóng">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div class="grid-2" style="gap:16px">
+        <div class="input-group">
+          <label for="swap-cont1">Cont 1 (Nhập)</label>
+          <select class="select" id="swap-cont1">
+            <option>CONT #123 – 20ft Nhập</option>
+            <option>CONT #234 – 20ft Nhập</option>
+          </select>
+        </div>
+        <div class="input-group">
+          <label for="swap-cont2">Cont 2 (Xuất)</label>
+          <select class="select" id="swap-cont2">
+            <option>CONT #456 – 20ft Xuất</option>
+            <option>CONT #567 – 20ft Xuất</option>
+          </select>
+        </div>
+      </div>
+      <div class="input-group">
+        <label for="swap-location">Địa điểm swap</label>
+        <select class="select" id="swap-location">
+          <option>Hub KCN Lớn – Depot 2</option>
+          <option>Hub KCN 2</option>
+        </select>
+      </div>
+      <div class="alert alert--success">
+        <span class="material-symbols-outlined">check_circle</span>
+        <p>Ghép 2 cont 20ft sẽ tiết kiệm ~1 chuyến đầu kéo và giảm phí DEM/DET.</p>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Hủy</button>
+      <button class="btn btn--primary">Xác nhận Swap</button>
+    </div>
+  </div>
+</div>
+
+<!-- 6. New Order Nghiệp Vụ -->
+<div class="overlay" id="modal-new-order" role="dialog" aria-modal="true" aria-labelledby="modal-new-title">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title" id="modal-new-title">Tạo Lệnh Nghiệp Vụ Phát Sinh</h2>
+      <button class="modal__close js-modal-close" aria-label="Đóng">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div class="input-group">
+        <label for="new-type">Loại nghiệp vụ</label>
+        <select class="select" id="new-type">
+          <option>Cắt Mooc</option>
+          <option>Hạ Cont</option>
+          <option>Swap Cont</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="new-cont">Mã Container</label>
+        <input class="input" type="text" id="new-cont" placeholder="Nhập mã container..." />
+      </div>
+      <div class="input-group">
+        <label for="new-note">Ghi chú</label>
+        <input class="input" type="text" id="new-note" placeholder="Lý do tạo lệnh..." />
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Hủy</button>
+      <button class="btn btn--primary">Tạo Lệnh</button>
+    </div>
+  </div>
+</div>
+
+<!-- 6. Container Detail -->
+<div class="overlay" id="modal-container-detail">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title">Chi tiết Cont <span id="detail-cont-id-header"></span></h2>
+      <button class="modal__close js-modal-close"><span class="material-symbols-outlined">close</span></button>
+    </div>
+    <div class="modal__body">
+      <div class="card" style="background:rgba(0,0,0,0.04); border:none; padding:16px; margin-bottom:16px">
+        <p class="text-muted" style="font-size:12px">Khách hàng</p>
+        <p id="detail-client" style="margin-bottom:12px; font-weight:600"></p>
+        <p class="text-muted" style="font-size:12px">Lộ trình</p>
+        <p id="detail-route" style="font-weight:600"></p>
+      </div>
+      <div id="detail-status"></div>
+    </div>
+  </div>
+</div>
+
+<!-- 7. Driver Detail -->
+<div class="overlay" id="modal-driver-detail" role="dialog" aria-modal="true" aria-labelledby="modal-driver-title">
+  <div class="modal">
+    <div class="modal__header">
+      <div>
+        <h2 class="modal__title" id="modal-driver-title">Chi tiết Tài xế</h2>
+        <p style="font-size:13px;color:var(--color-on-surface-variant);margin-top:4px" id="detail-driver-name"></p>
+      </div>
+      <button class="modal__close js-modal-close" aria-label="Đóng">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div style="background:var(--color-surface);border-radius:8px;padding:16px;margin-bottom:16px;border:1px solid var(--color-border)">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+          <div>
+            <p style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:6px">Đội vận hành</p>
+            <p style="font-size:14px;font-weight:500;color:var(--color-text-main)" id="detail-driver-team"></p>
+          </div>
+          <div>
+            <p style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:6px">Số chuyến</p>
+            <p style="font-size:14px;font-weight:500;color:var(--color-text-main)" id="detail-driver-trips"></p>
+          </div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div>
+            <p style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:6px">Điểm lấy/trả</p>
+            <p style="font-size:14px;font-weight:500;color:var(--color-text-main)" id="detail-driver-points"></p>
+          </div>
+          <div>
+            <p style="font-size:11px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:6px">Trạng thái</p>
+            <p style="font-size:14px;font-weight:500;color:var(--color-text-main)" id="detail-driver-status">Hoạt động</p>
+          </div>
+        </div>
+      </div>
+      <div style="border-bottom:1px solid var(--color-border);padding-bottom:16px;margin-bottom:16px">
+        <p style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:12px">Tính lương tháng này</p>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;font-size:13px">
+          <div style="padding:12px;background:rgba(0,0,0,0.02);border-radius:6px;border:1px solid rgba(0,0,0,0.05)">
+            <p style="color:var(--color-text-muted);font-size:11px;margin-bottom:4px">Phụ phí phát sinh</p>
+            <p style="font-size:16px;font-weight:600;color:var(--color-text-main)" id="detail-driver-surcharge">0 VNĐ</p>
+          </div>
+          <div style="padding:12px;background:rgba(16,185,129,0.1);border-radius:6px;border:1px solid rgba(16,185,129,0.2)">
+            <p style="color:var(--color-accent-emerald);font-size:11px;margin-bottom:4px">Tổng lương dự kiến</p>
+            <p style="font-size:16px;font-weight:600;color:var(--color-accent-emerald)" id="detail-driver-total">0 VNĐ</p>
+          </div>
+        </div>
+      </div>
+      <div>
+        <p style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--color-text-muted);margin-bottom:8px">Ghi chú</p>
+        <p style="font-size:13px;line-height:1.5;color:var(--color-text-main)" id="detail-driver-notes">Không có ghi chú</p>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Đóng</button>
+      <button class="btn btn--primary">Xác nhận lương</button>
+    </div>
+  </div>
+</div>
+
+<!-- 8. New Order -->
+<div class="overlay" id="modal-create-order" role="dialog" aria-modal="true" aria-labelledby="modal-create-title">
+  <div class="modal">
+    <div class="modal__header">
+      <h2 class="modal__title" id="modal-create-title">Tạo Lệnh Vận Chuyển</h2>
+      <button class="modal__close js-modal-close" aria-label="Đóng">
+        <span class="material-symbols-outlined">close</span>
+      </button>
+    </div>
+    <div class="modal__body">
+      <div class="input-group">
+        <label for="new-order-client">Khách hàng</label>
+        <select class="select" id="new-order-client">
+          <option>Khách hàng A</option>
+          <option>Khách hàng B</option>
+          <option>Khách hàng C</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="new-order-flow">Loại luồng</label>
+        <select class="select" id="new-order-flow">
+          <option>Flow 1 – Lưu Hub</option>
+          <option>Flow 2 – Giao Thẳng</option>
+          <option>Flow 3 – Ghép 2 Cont 20</option>
+          <option>Flow 4 – Reuse Cont Rỗng</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="new-order-source">Địa điểm lấy hàng</label>
+        <select class="select" id="new-order-source">
+          <option>Hub KCN Lớn</option>
+          <option>Hub KCN 2</option>
+          <option>Hub KCN 3</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="new-order-dest">Địa điểm giao hàng</label>
+        <select class="select" id="new-order-dest">
+          <option>Tây Ninh</option>
+          <option>Hồ Chí Minh</option>
+          <option>Bình Dương</option>
+        </select>
+      </div>
+      <div class="input-group">
+        <label for="new-order-priority">Mức ưu tiên</label>
+        <select class="select" id="new-order-priority">
+          <option>Thường</option>
+          <option>Cao</option>
+          <option>Khẩn cấp</option>
+        </select>
+      </div>
+    </div>
+    <div class="modal__footer">
+      <button class="btn btn--secondary js-modal-close">Hủy</button>
+      <button class="btn btn--primary">Tạo Lệnh</button>
+    </div>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="scripts/data.js"></script>
+<script src="scripts/ui.js"></script>
+<script src="scripts/main.js"></script>
+
+</body>
+</html>

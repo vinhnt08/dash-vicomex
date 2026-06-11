@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vicomex - Thiết lập Luồng Vận Hành</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Hanken+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+          darkMode: "class",
+          theme: {
+            extend: {
+              "colors": {
+                      "primary-container": "#131b2e",
+                      "on-secondary-fixed-variant": "#38485d",
+                      "on-secondary-fixed": "#0b1c30",
+                      "surface-tint": "#565e74",
+                      "surface-container-low": "#f6f3f5",
+                      "on-tertiary-fixed": "#271901",
+                      "on-primary-fixed": "#131b2e",
+                      "outline": "#76777d",
+                      "on-primary-fixed-variant": "#3f465c",
+                      "background": "#fcf8fa",
+                      "primary": "#000000",
+                      "tertiary": "#000000",
+                      "secondary": "#505f76",
+                      "on-secondary": "#ffffff",
+                      "secondary-fixed": "#d3e4fe",
+                      "surface-dim": "#dcd9db",
+                      "primary-fixed": "#dae2fd",
+                      "on-secondary-container": "#54647a",
+                      "tertiary-container": "#271901",
+                      "surface-container-lowest": "#ffffff",
+                      "on-error-container": "#93000a",
+                      "secondary-fixed-dim": "#b7c8e1",
+                      "on-primary-container": "#7c839b",
+                      "primary-fixed-dim": "#bec6e0",
+                      "surface-container-high": "#eae7e9",
+                      "on-tertiary-container": "#98805d",
+                      "on-surface-variant": "#45464d",
+                      "on-error": "#ffffff",
+                      "surface-bright": "#fcf8fa",
+                      "on-primary": "#ffffff",
+                      "tertiary-fixed-dim": "#dec29a",
+                      "secondary-container": "#d0e1fb",
+                      "outline-variant": "#c6c6cd",
+                      "error": "#ba1a1a",
+                      "inverse-primary": "#bec6e0",
+                      "surface-container-highest": "#e4e2e4",
+                      "surface-container": "#f0edef",
+                      "on-surface": "#1b1b1d",
+                      "on-background": "#1b1b1d",
+                      "surface-variant": "#e4e2e4",
+                      "tertiary-fixed": "#fcdeb5",
+                      "inverse-surface": "#303032",
+                      "surface": "#fcf8fa",
+                      "on-tertiary-fixed-variant": "#574425",
+                      "on-tertiary": "#ffffff",
+                      "inverse-on-surface": "#f3f0f2",
+                      "error-container": "#ffdad6"
+              },
+              "borderRadius": {
+                      "DEFAULT": "0.125rem",
+                      "lg": "0.25rem",
+                      "xl": "0.5rem",
+                      "full": "0.75rem"
+              },
+              "spacing": {
+                      "margin-desktop": "32px",
+                      "margin-mobile": "16px",
+                      "scale-4": "4px",
+                      "scale-16": "16px",
+                      "scale-32": "32px",
+                      "gutter": "24px",
+                      "scale-48": "48px",
+                      "scale-24": "24px",
+                      "scale-12": "12px",
+                      "container-max": "1440px",
+                      "scale-8": "8px"
+              },
+              "fontFamily": {
+                      "body-md": [
+                              "Inter"
+                      ],
+                      "headline-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "display-lg": [
+                              "Hanken Grotesk"
+                      ],
+                      "label-md": [
+                              "Inter"
+                      ],
+                      "title-md": [
+                              "Inter"
+                      ],
+                      "body-sm": [
+                              "Inter"
+                      ],
+                      "label-caps": [
+                              "Inter"
+                      ],
+                      "headline-lg-mobile": [
+                              "Hanken Grotesk"
+                      ]
+              },
+              "fontSize": {
+                      "body-md": [
+                              "16px",
+                              {
+                                      "lineHeight": "24px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "headline-lg": [
+                              "32px",
+                              {
+                                      "lineHeight": "40px",
+                                      "letterSpacing": "-0.01em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "display-lg": [
+                              "48px",
+                              {
+                                      "lineHeight": "56px",
+                                      "letterSpacing": "-0.02em",
+                                      "fontWeight": "700"
+                              }
+                      ],
+                      "label-md": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "500"
+                              }
+                      ],
+                      "title-md": [
+                              "18px",
+                              {
+                                      "lineHeight": "28px",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "body-sm": [
+                              "14px",
+                              {
+                                      "lineHeight": "20px",
+                                      "fontWeight": "400"
+                              }
+                      ],
+                      "label-caps": [
+                              "12px",
+                              {
+                                      "lineHeight": "16px",
+                                      "letterSpacing": "0.05em",
+                                      "fontWeight": "600"
+                              }
+                      ],
+                      "headline-lg-mobile": [
+                              "24px",
+                              {
+                                      "lineHeight": "32px",
+                                      "fontWeight": "600"
+                              }
+                      ]
+              }
+      },
+          },
+        }
+    </script>
+<style>.blurred-bg {
+    background-image: url(https://lh3.googleusercontent.com/aida-public/AB6AXuAYIA5hmADh98IDXR-TOw2daZobrjGUPy60jQeWaLGiyciZhT70HDcmyxoSijj34UukuUSuwOsq6jqYLQDdfaZ2jlMmnro8fdMV5VeRoU91BJKGpo62wiaB--Q10fIkm429tRo0Br1dNsx8hlKvkq_g8kI03uXbty1_3ZdGZYg8jpbWkIifCVAoDjcBwqbGDdWy5jvD9F1N0p1dlGLGjJtyisZQtQ5WbTvJt5ozV87d6lQsF5zpQ8FdGsQ6GMYaL7tdLQXBihjiZWQh);
+    background-size: cover;
+    background-position: center
+    }</style>
+</head>
+<body class="bg-background text-on-surface font-body-md min-h-screen overflow-hidden">
+<!-- Blurred Background Context -->
+<div class="fixed inset-0 blurred-bg" data-alt="A high-angle view of a modern, organized logistics hub dashboard interface visible on a screen. The dashboard displays data tables, charts, and maps, representing a busy shipping enterprise. The overall tone is professional, industrial, and fast-paced, reflecting a complex supply chain network. The color palette emphasizes clean whites, analytical grays, and precise navy accents.">
+<div class="absolute inset-0 bg-surface/80 backdrop-blur-md"></div>
+</div>
+<!-- Modal Overlay -->
+<div class="fixed inset-0 z-50 flex items-center justify-center p-margin-mobile md:p-margin-desktop">
+<!-- Modal Container -->
+<div aria-labelledby="modal-title" aria-modal="true" class="bg-surface-container-lowest w-full max-w-4xl max-h-[921px] rounded-lg shadow-lg flex flex-col border border-outline-variant overflow-hidden" role="dialog">
+<!-- Header -->
+<header class="flex justify-between items-center px-scale-24 py-scale-16 border-b border-outline-variant bg-surface-container-lowest sticky top-0 z-10">
+<h2 class="font-headline-lg text-headline-lg text-on-surface" id="modal-title">Thiết lập Luồng Vận Hành</h2>
+<button aria-label="Close modal" class="text-on-surface-variant hover:text-on-surface transition-colors p-scale-4">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 0;">close</span>
+</button>
+</header>
+<!-- Scrollable Content -->
+<div class="p-scale-24 overflow-y-auto flex-1 flex flex-col gap-scale-32">
+<!-- Step 1: Chọn Chặng -->
+<section class="flex flex-col gap-scale-12">
+<h3 class="font-title-md text-title-md text-on-surface">1. Chọn Chặng</h3>
+<div class="flex gap-scale-24">
+<label class="flex items-center gap-scale-8 cursor-pointer">
+<input checked="" class="w-4 h-4 text-primary bg-surface border-outline-variant focus:ring-primary focus:ring-opacity-10" name="chang" type="radio" value="nhap-khau"/>
+<span class="font-label-md text-label-md text-on-surface">Nhập Khẩu</span>
+</label>
+<label class="flex items-center gap-scale-8 cursor-pointer">
+<input class="w-4 h-4 text-primary bg-surface border-outline-variant focus:ring-primary focus:ring-opacity-10" name="chang" type="radio" value="xuat-khau"/>
+<span class="font-label-md text-label-md text-on-surface">Xuất Khẩu</span>
+</label>
+</div>
+</section>
+<!-- Step 2: Chọn Kịch bản Flow -->
+<section class="flex flex-col gap-scale-12">
+<h3 class="font-title-md text-title-md text-on-surface">2. Chọn Kịch bản Flow</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-scale-16">
+<!-- Flow 1 (Active) -->
+<div class="border-2 border-primary bg-surface-container-lowest rounded-lg p-scale-16 cursor-pointer relative hover:shadow-sm transition-shadow">
+<div class="absolute top-scale-16 right-scale-16 text-primary">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+<h4 class="font-label-md text-label-md text-primary mb-scale-4">Flow 1: Lưu Hub</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Khách không đủ sức chứa</p>
+</div>
+<!-- Flow 2 -->
+<div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-scale-16 cursor-pointer hover:border-outline hover:bg-surface-container-low transition-colors">
+<h4 class="font-label-md text-label-md text-on-surface mb-scale-4">Flow 2: Giao thẳng</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Cần gấp</p>
+</div>
+<!-- Flow 3 -->
+<div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-scale-16 cursor-pointer hover:border-outline hover:bg-surface-container-low transition-colors">
+<h4 class="font-label-md text-label-md text-on-surface mb-scale-4">Flow 3: Ghép 2 Cont 20</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant">Qua Depot -&gt; Cảng -&gt; Hub</p>
+</div>
+<!-- Flow 4 -->
+<div class="border border-outline-variant bg-surface-container-lowest rounded-lg p-scale-16 cursor-pointer hover:border-outline hover:bg-surface-container-low transition-colors">
+<h4 class="font-label-md text-label-md text-on-surface mb-scale-4">Flow 4: Tái sử dụng (Reuse) Cont rỗng</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant"> </p>
+</div>
+</div>
+</section>
+<!-- Step 3: Flow Routing Builder -->
+<section class="flex flex-col gap-scale-12">
+<h3 class="font-title-md text-title-md text-on-surface">3. Flow Routing Builder</h3>
+<div class="bg-surface-container-low border border-outline-variant rounded-lg p-scale-24 flex items-center justify-between overflow-x-auto gap-scale-16">
+<!-- Step: Cảng -->
+<div class="flex flex-col items-center gap-scale-8 min-w-max">
+<div class="w-10 h-10 rounded-full bg-primary-container text-on-primary-container flex items-center justify-center border border-primary-fixed-dim shadow-sm">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">directions_boat</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Cảng</span>
+</div>
+<!-- Arrow -->
+<div class="flex-1 flex items-center min-w-[40px]">
+<div class="h-[2px] w-full bg-outline-variant relative">
+<span class="material-symbols-outlined absolute right-[-8px] top-1/2 -translate-y-1/2 text-outline-variant text-base">chevron_right</span>
+</div>
+</div>
+<!-- Step: Hub (with dropdown) -->
+<div class="flex flex-col items-center gap-scale-8 min-w-max">
+<div class="w-10 h-10 rounded-full bg-primary text-on-primary flex items-center justify-center shadow-sm">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">warehouse</span>
+</div>
+<div class="relative">
+<select class="appearance-none bg-surface-container-lowest border border-outline-variant text-on-surface font-body-sm text-body-sm rounded pl-scale-8 pr-scale-24 py-scale-4 focus:ring-2 focus:ring-primary/10 focus:border-primary outline-none min-w-[120px] shadow-sm cursor-pointer">
+<option>Vicomex Hub</option>
+<option>Hub 1</option>
+<option>Hub 2</option>
+<option>Hub 3</option>
+</select>
+<span class="material-symbols-outlined absolute right-scale-4 top-1/2 -translate-y-1/2 text-on-surface-variant pointer-events-none text-sm">arrow_drop_down</span>
+</div>
+</div>
+<!-- Arrow -->
+<div class="flex-1 flex items-center min-w-[40px]">
+<div class="h-[2px] w-full bg-outline-variant relative">
+<span class="material-symbols-outlined absolute right-[-8px] top-1/2 -translate-y-1/2 text-outline-variant text-base">chevron_right</span>
+</div>
+</div>
+<!-- Step: Khách Hàng -->
+<div class="flex flex-col items-center gap-scale-8 min-w-max">
+<div class="w-10 h-10 rounded-full bg-surface-container-highest text-on-surface flex items-center justify-center border border-outline-variant shadow-sm">
+<span class="material-symbols-outlined text-sm" style="font-variation-settings: 'FILL' 1;">storefront</span>
+</div>
+<span class="font-label-md text-label-md text-on-surface">Khách Hàng A</span>
+</div>
+</div>
+</section>
+<!-- Step 4: Logic Reuse Cont -->
+<section class="flex flex-col gap-scale-12">
+<h3 class="font-title-md text-title-md text-on-surface">4. Logic Reuse Cont</h3>
+<div class="flex items-start gap-scale-16 bg-surface-container-low border border-outline-variant rounded-lg p-scale-16">
+<!-- Toggle Switch -->
+<label class="relative inline-flex items-center cursor-pointer mt-1">
+<input checked="" class="sr-only peer" type="checkbox" value=""/>
+<div class="w-11 h-6 bg-outline-variant peer-focus:outline-none peer-focus:ring-2 peer-focus:ring-primary/10 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-outline-variant after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary"></div>
+</label>
+<div>
+<h4 class="font-label-md text-label-md text-on-surface">Đăng ký Reuse Container sau khi rút hàng</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mt-scale-4">Giữ vỏ cont để phục vụ chặng xuất khẩu, tối ưu phí DEM/DET</p>
+</div>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<footer class="flex justify-end items-center gap-scale-16 px-scale-24 py-scale-16 border-t border-outline-variant bg-surface-container-lowest sticky bottom-0 z-10">
+<button class="h-10 px-scale-16 font-label-md text-label-md bg-surface-container-lowest border border-outline-variant text-on-surface rounded hover:bg-surface-container-low hover:text-on-surface transition-colors focus:outline-none focus:ring-2 focus:ring-primary/10">
+                    Hủy
+                </button>
+<button class="h-10 px-scale-16 font-label-md text-label-md bg-primary text-on-primary rounded hover:opacity-90 transition-opacity focus:outline-none focus:ring-2 focus:ring-primary/10 shadow-sm flex items-center gap-scale-8">
+<span>Tạo Lệnh</span>
+<span class="material-symbols-outlined text-sm">arrow_forward</span>
+</button>
+</footer>
+</div>
+</div>
+</body></html>

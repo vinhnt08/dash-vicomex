@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vicomex - Tạo Lệnh Nghiệp Vụ Phát Sinh</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        "inverse-surface": "#303032",
+                        "error-container": "#ffdad6",
+                        "outline": "#76777d",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "outline-variant": "#c6c6cd",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary": "#000000",
+                        "surface-container-highest": "#e4e2e4",
+                        "tertiary-fixed": "#fcdeb5",
+                        "surface-dim": "#dcd9db",
+                        "primary-fixed": "#dae2fd",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "surface-variant": "#e4e2e4",
+                        "surface-tint": "#565e74",
+                        "surface-bright": "#fcf8fa",
+                        "on-tertiary-container": "#98805d",
+                        "on-secondary": "#ffffff",
+                        "on-surface": "#1b1b1d",
+                        "surface-container": "#f0edef",
+                        "surface-container-lowest": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-secondary-container": "#54647a",
+                        "secondary-fixed": "#d3e4fe",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-container-high": "#eae7e9",
+                        "on-surface-variant": "#45464d",
+                        "on-primary-container": "#7c839b",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "error": "#ba1a1a",
+                        "primary": "#000000",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "secondary": "#505f76",
+                        "primary-container": "#131b2e",
+                        "on-secondary-fixed": "#0b1c30",
+                        "secondary-container": "#d0e1fb",
+                        "on-primary-fixed": "#131b2e",
+                        "tertiary-container": "#271901",
+                        "background": "#fcf8fa",
+                        "on-tertiary-fixed": "#271901",
+                        "surface-container-low": "#f6f3f5",
+                        "on-error": "#ffffff",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary": "#ffffff",
+                        "on-error-container": "#93000a",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface": "#fcf8fa"
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    fontFamily: {
+                        "headline": ["Hanken Grotesk"],
+                        "display": ["Hanken Grotesk"],
+                        "body": ["Inter"],
+                        "label": ["Inter"]
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-surface text-on-surface font-body antialiased min-h-screen flex items-center justify-center p-4 md:p-8">
+<!-- Modal Overlay -->
+<div aria-hidden="true" class="fixed inset-0 bg-inverse-surface/40 backdrop-blur-sm z-40"></div>
+<!-- Modal Container -->
+<div class="relative bg-surface-container-lowest rounded-xl shadow-[0_4px_6px_-1px_rgb(0,0,0,0.1),0_2px_4px_-2px_rgb(0,0,0,0.1)] border border-outline-variant w-full max-w-3xl z-50 flex flex-col max-h-[921px]">
+<!-- Header -->
+<div class="flex items-start justify-between p-6 border-b border-outline-variant bg-surface-container-low rounded-t-xl shrink-0">
+<div>
+<h2 class="font-headline text-[24px] font-semibold text-on-surface leading-[32px]">Tạo Lệnh Nghiệp Vụ Phát Sinh</h2>
+<p class="text-[14px] text-on-surface-variant mt-1">Chủ động thiết lập lệnh Cắt Mooc, Hạ Cont hoặc Swap Cont để xử lý tình huống.</p>
+</div>
+<button class="text-on-surface-variant hover:text-on-surface transition-colors p-2 rounded-lg hover:bg-surface-container-high focus:outline-none focus:ring-2 focus:ring-primary/10">
+<span class="material-symbols-outlined text-[24px]">close</span>
+</button>
+</div>
+<!-- Scrollable Content -->
+<div class="p-6 overflow-y-auto flex-1 space-y-8">
+<!-- Section 1: Chọn Loại Nghiệp Vụ -->
+<section class="space-y-3">
+<h3 class="font-label text-[14px] font-semibold text-on-surface tracking-wider uppercase text-on-surface-variant">Chọn Loại Nghiệp Vụ</h3>
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+<!-- Option 1: Active -->
+<label class="relative flex flex-col items-center justify-center p-4 border-2 border-primary bg-primary/5 rounded-lg cursor-pointer transition-all">
+<input checked="" class="sr-only" name="nghiep_vu" type="radio" value="cat_mooc"/>
+<span class="material-symbols-outlined text-[28px] text-primary mb-2">rv_hookup</span>
+<span class="font-label text-[14px] font-medium text-primary">Cắt Mooc</span>
+<div class="absolute top-2 right-2 text-primary">
+<span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+</div>
+</label>
+<!-- Option 2: Inactive -->
+<label class="relative flex flex-col items-center justify-center p-4 border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-high rounded-lg cursor-pointer transition-all">
+<input class="sr-only" name="nghiep_vu" type="radio" value="ha_cont"/>
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant mb-2">download</span>
+<span class="font-label text-[14px] font-medium text-on-surface-variant">Hạ Cont</span>
+</label>
+<!-- Option 3: Inactive -->
+<label class="relative flex flex-col items-center justify-center p-4 border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-high rounded-lg cursor-pointer transition-all">
+<input class="sr-only" name="nghiep_vu" type="radio" value="swap_cont"/>
+<span class="material-symbols-outlined text-[28px] text-on-surface-variant mb-2">swap_horiz</span>
+<span class="font-label text-[14px] font-medium text-on-surface-variant">Swap Cont</span>
+</label>
+</div>
+</section>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<!-- Section 2: Chọn Đối Tượng -->
+<section class="space-y-2">
+<label class="block font-label text-[14px] font-medium text-on-surface">Chọn Container / Lệnh vận chuyển</label>
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px]">search</span>
+<input class="w-full h-10 pl-10 pr-10 border border-outline-variant rounded bg-surface-container-lowest text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-shadow truncate" readonly="" type="text" value="Cont #112233 - Đang trên đường tới Cảng"/>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] cursor-pointer">arrow_drop_down</span>
+</div>
+</section>
+<!-- Section 3: Lý Do Xử Lý -->
+<section class="space-y-2">
+<label class="block font-label text-[14px] font-medium text-on-surface">Trường hợp áp dụng (Lý do)</label>
+<div class="relative">
+<select class="w-full h-10 px-3 pr-10 border border-outline-variant rounded bg-surface-container-lowest text-[14px] text-on-surface focus:outline-none focus:border-primary focus:ring-2 focus:ring-primary/10 transition-shadow appearance-none">
+<option>Tối ưu vòng xe / Đổi đầu kéo</option>
+<option>Sự cố kỹ thuật</option>
+<option>Yêu cầu từ khách hàng</option>
+</select>
+<span class="material-symbols-outlined absolute right-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-[20px] pointer-events-none">arrow_drop_down</span>
+</div>
+</section>
+</div>
+<!-- Section 4: Chọn Hub Tiếp Nhận -->
+<section class="space-y-3">
+<h3 class="font-label text-[14px] font-semibold text-on-surface tracking-wider uppercase text-on-surface-variant">Chọn Hub xử lý dự kiến</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<!-- Card 1: Hub KCN Lớn -->
+<label class="relative border border-outline-variant rounded-lg p-4 bg-surface-container-lowest hover:border-primary cursor-pointer transition-colors block group">
+<input checked="" class="sr-only" name="hub" type="radio" value="hub_1"/>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">warehouse</span>
+<span class="font-label text-[14px] font-semibold text-on-surface">Hub KCN Lớn</span>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#ecfdf5] text-[#065f46]">
+                                Tối ưu
+                            </span>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between text-[14px]">
+<span class="text-on-surface-variant">Sức chứa:</span>
+<span class="text-on-surface font-medium">Trống 20 slot</span>
+</div>
+<div class="flex justify-between text-[14px]">
+<span class="text-on-surface-variant">Xe chuyên dụng:</span>
+<span class="text-on-surface font-medium">Sẵn sàng 4/4</span>
+</div>
+</div>
+<!-- Active Indicator -->
+<div class="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none opacity-100 transition-opacity"></div>
+</label>
+<!-- Card 2: Hub KCN 2 -->
+<label class="relative border border-outline-variant rounded-lg p-4 bg-surface-container-lowest hover:border-primary cursor-pointer transition-colors block group">
+<input class="sr-only" name="hub" type="radio" value="hub_2"/>
+<div class="flex justify-between items-start mb-3">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-on-surface-variant">warehouse</span>
+<span class="font-label text-[14px] font-semibold text-on-surface">Hub KCN 2</span>
+</div>
+<span class="inline-flex items-center px-2 py-0.5 rounded-full text-[12px] font-medium bg-[#fff7ed] text-[#9a3412]">
+                                Cảnh báo
+                            </span>
+</div>
+<div class="space-y-1.5">
+<div class="flex justify-between text-[14px]">
+<span class="text-on-surface-variant">Sức chứa:</span>
+<span class="text-on-surface font-medium">Trống 5 slot</span>
+</div>
+<div class="flex justify-between text-[14px]">
+<span class="text-on-surface-variant">Xe chuyên dụng:</span>
+<span class="text-on-surface font-medium">Bận 1/1</span>
+</div>
+</div>
+<!-- Active Indicator (Hidden by default) -->
+<div class="absolute inset-0 border-2 border-primary rounded-lg pointer-events-none opacity-0 group-has-[:checked]:opacity-100 transition-opacity"></div>
+</label>
+</div>
+</section>
+</div>
+<!-- Footer -->
+<div class="flex items-center justify-end gap-3 p-6 border-t border-outline-variant bg-surface-container-low rounded-b-xl shrink-0">
+<button class="h-10 px-4 font-label text-[14px] font-medium text-on-surface bg-surface-container-lowest border border-outline-variant rounded hover:bg-surface-container transition-colors focus:outline-none focus:ring-2 focus:ring-primary/10">
+                Hủy
+            </button>
+<button class="h-10 px-4 font-label text-[14px] font-medium text-on-primary bg-primary rounded hover:bg-inverse-surface transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 shadow-sm flex items-center gap-2">
+<span class="material-symbols-outlined text-[18px]">queue</span>
+                Tạo Lệnh Đưa Vào Hàng Đợi
+            </button>
+</div>
+</div>
+<script>
+        // Simple script to handle radio button styling logic if CSS :has is not fully supported, though Tailwind uses modern CSS.
+        // The active state for the options uses a combination of tailwind arbitrary variants or just standard DOM manipulation for robust compatibility.
+        
+        document.querySelectorAll('input[name="nghiep_vu"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                // Reset all
+                document.querySelectorAll('input[name="nghiep_vu"]').forEach(r => {
+                    const label = r.closest('label');
+                    label.className = "relative flex flex-col items-center justify-center p-4 border border-outline-variant bg-surface-container-lowest hover:bg-surface-container-high rounded-lg cursor-pointer transition-all";
+                    label.querySelector('.text-primary')?.classList.replace('text-primary', 'text-on-surface-variant');
+                    label.querySelector('.text-primary')?.classList.replace('text-primary', 'text-on-surface-variant');
+                    const iconCheck = label.querySelector('.absolute');
+                    if(iconCheck) iconCheck.remove();
+                });
+
+                // Set active
+                if(this.checked) {
+                    const label = this.closest('label');
+                    label.className = "relative flex flex-col items-center justify-center p-4 border-2 border-primary bg-primary/5 rounded-lg cursor-pointer transition-all";
+                    const icon = label.querySelector('.material-symbols-outlined');
+                    const text = label.querySelector('.font-label');
+                    icon.classList.remove('text-on-surface-variant');
+                    icon.classList.add('text-primary');
+                    text.classList.remove('text-on-surface-variant');
+                    text.classList.add('text-primary');
+                    
+                    if(!label.querySelector('.absolute.top-2')) {
+                        label.insertAdjacentHTML('beforeend', `
+                            <div class="absolute top-2 right-2 text-primary">
+                                <span class="material-symbols-outlined text-[16px]" style="font-variation-settings: 'FILL' 1;">check_circle</span>
+                            </div>
+                        `);
+                    }
+                }
+            });
+        });
+
+        // Hub selection styling is handled by Tailwind's group-has-[:checked] where possible, but adding a fallback listener for thoroughness
+        document.querySelectorAll('input[name="hub"]').forEach(radio => {
+            radio.addEventListener('change', function() {
+                document.querySelectorAll('input[name="hub"]').forEach(r => {
+                    const indicator = r.closest('label').querySelector('.absolute.inset-0');
+                    if(r.checked) {
+                        indicator.classList.remove('opacity-0');
+                        indicator.classList.add('opacity-100');
+                    } else {
+                        indicator.classList.add('opacity-0');
+                        indicator.classList.remove('opacity-100');
+                    }
+                });
+            });
+        });
+    </script>
+</body></html>

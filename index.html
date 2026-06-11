@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Demo Selector</title>
+    <style>
+        /* Global page styling */
+        body {
+            font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f0f4ff, #d9e6ff);
+            color: #333;
+        }
+
+        .container {
+            text-align: center;
+            background: #fff;
+            padding: 40px 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+            max-width: 420px;
+            width: 90%;
+        }
+
+        h1 {
+            margin-bottom: 30px;
+            font-size: 2rem;
+            color: #2c3e50;
+        }
+
+        .option {
+            display: inline-block;
+            margin: 12px 0;
+            padding: 14px 28px;
+            background: #4a90e2;
+            color: #fff;
+            text-decoration: none;
+            border-radius: 6px;
+            font-size: 1.1rem;
+            transition: background 0.3s ease, transform 0.2s ease;
+        }
+
+        .option:hover {
+            background: #357ab8;
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Select a Demo</h1>
+        <a class="option" href="demo1/index.html">Option 1 - Demo 1</a>
+        <a class="option" href="demo2/index.html">Option 2 - Demo 2</a>
+        <a class="option" href="demo3/index.html">Option 3 - Demo 3</a>
+    </div>
+</body>
+</html>

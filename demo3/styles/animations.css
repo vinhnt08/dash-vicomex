@@ -1,0 +1,61 @@
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.page {
+  animation: fadeIn 0.4s ease-out forwards;
+}
+
+.anim-stagger > * {
+  opacity: 0;
+  animation: fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Stagger calculation uses inline custom property set by JS or generic nth-child */
+.anim-stagger > *:nth-child(1) { animation-delay: 50ms; }
+.anim-stagger > *:nth-child(2) { animation-delay: 100ms; }
+.anim-stagger > *:nth-child(3) { animation-delay: 150ms; }
+.anim-stagger > *:nth-child(4) { animation-delay: 200ms; }
+.anim-stagger > *:nth-child(5) { animation-delay: 250ms; }
+.anim-stagger > *:nth-child(6) { animation-delay: 300ms; }
+.anim-stagger > *:nth-child(n+7) { animation-delay: 350ms; }
+
+/* Table row animation added via JS inline style (animation-delay: var(--delay)) */
+.table tbody tr {
+  opacity: 0;
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+/* Flow line animation */
+@keyframes flowDash {
+  to {
+    stroke-dashoffset: -20;
+  }
+}
+
+.map-container path {
+  animation: flowDash 2s linear infinite;
+}
+
+/* Pulse */
+@keyframes pulse {
+  0% { box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); }
+  50% { box-shadow: 0 0 20px rgba(14, 165, 233, 0.5); }
+  100% { box-shadow: 0 0 10px rgba(14, 165, 233, 0.2); }
+}
+
+.pulse-active {
+  animation: pulse 2s infinite;
+}

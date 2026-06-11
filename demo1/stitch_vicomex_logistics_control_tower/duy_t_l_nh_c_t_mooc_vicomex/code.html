@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Vicomex - Cắt Mooc &amp; Lưu Hub</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Hanken+Grotesk:wght@600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            "colors": {
+                    "surface-container-highest": "#e4e2e4",
+                    "secondary-fixed": "#d3e4fe",
+                    "error-container": "#ffdad6",
+                    "tertiary-fixed": "#fcdeb5",
+                    "surface-bright": "#fcf8fa",
+                    "surface-dim": "#dcd9db",
+                    "on-surface-variant": "#45464d",
+                    "primary": "#000000",
+                    "on-surface": "#1b1b1d",
+                    "on-tertiary": "#ffffff",
+                    "surface-container": "#f0edef",
+                    "surface-variant": "#e4e2e4",
+                    "outline": "#76777d",
+                    "on-tertiary-fixed": "#271901",
+                    "inverse-primary": "#bec6e0",
+                    "primary-fixed-dim": "#bec6e0",
+                    "error": "#ba1a1a",
+                    "surface-container-lowest": "#ffffff",
+                    "secondary-fixed-dim": "#b7c8e1",
+                    "secondary": "#505f76",
+                    "on-primary": "#ffffff",
+                    "on-primary-fixed": "#131b2e",
+                    "background": "#fcf8fa",
+                    "on-secondary": "#ffffff",
+                    "surface-container-high": "#eae7e9",
+                    "surface": "#fcf8fa",
+                    "on-error-container": "#93000a",
+                    "inverse-surface": "#303032",
+                    "tertiary": "#000000",
+                    "primary-fixed": "#dae2fd",
+                    "tertiary-container": "#271901",
+                    "on-tertiary-fixed-variant": "#574425",
+                    "on-error": "#ffffff",
+                    "on-background": "#1b1b1d",
+                    "on-secondary-container": "#54647a",
+                    "on-secondary-fixed-variant": "#38485d",
+                    "surface-container-low": "#f6f3f5",
+                    "outline-variant": "#c6c6cd",
+                    "on-secondary-fixed": "#0b1c30",
+                    "on-primary-container": "#7c839b",
+                    "primary-container": "#131b2e",
+                    "on-tertiary-container": "#98805d",
+                    "on-primary-fixed-variant": "#3f465c",
+                    "tertiary-fixed-dim": "#dec29a",
+                    "secondary-container": "#d0e1fb",
+                    "inverse-on-surface": "#f3f0f2",
+                    "surface-tint": "#565e74"
+            },
+            "borderRadius": {
+                    "DEFAULT": "0.125rem",
+                    "lg": "0.25rem",
+                    "xl": "0.5rem",
+                    "full": "0.75rem"
+            },
+            "spacing": {
+                    "scale-8": "8px",
+                    "margin-mobile": "16px",
+                    "scale-24": "24px",
+                    "scale-32": "32px",
+                    "scale-12": "12px",
+                    "scale-48": "48px",
+                    "scale-4": "4px",
+                    "margin-desktop": "32px",
+                    "gutter": "24px",
+                    "container-max": "1440px",
+                    "scale-16": "16px"
+            },
+            "fontFamily": {
+                    "label-md": [
+                            "Inter"
+                    ],
+                    "label-caps": [
+                            "Inter"
+                    ],
+                    "headline-lg-mobile": [
+                            "Hanken Grotesk"
+                    ],
+                    "display-lg": [
+                            "Hanken Grotesk"
+                    ],
+                    "title-md": [
+                            "Inter"
+                    ],
+                    "body-sm": [
+                            "Inter"
+                    ],
+                    "headline-lg": [
+                            "Hanken Grotesk"
+                    ],
+                    "body-md": [
+                            "Inter"
+                    ]
+            },
+            "fontSize": {
+                    "label-md": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "500"
+                            }
+                    ],
+                    "label-caps": [
+                            "12px",
+                            {
+                                    "lineHeight": "16px",
+                                    "letterSpacing": "0.05em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "headline-lg-mobile": [
+                            "24px",
+                            {
+                                    "lineHeight": "32px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "display-lg": [
+                            "48px",
+                            {
+                                    "lineHeight": "56px",
+                                    "letterSpacing": "-0.02em",
+                                    "fontWeight": "700"
+                            }
+                    ],
+                    "title-md": [
+                            "18px",
+                            {
+                                    "lineHeight": "28px",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-sm": [
+                            "14px",
+                            {
+                                    "lineHeight": "20px",
+                                    "fontWeight": "400"
+                            }
+                    ],
+                    "headline-lg": [
+                            "32px",
+                            {
+                                    "lineHeight": "40px",
+                                    "letterSpacing": "-0.01em",
+                                    "fontWeight": "600"
+                            }
+                    ],
+                    "body-md": [
+                            "16px",
+                            {
+                                    "lineHeight": "24px",
+                                    "fontWeight": "400"
+                            }
+                    ]
+            }
+    },
+        },
+      }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+    </style>
+</head>
+<body class="bg-background min-h-screen text-on-surface font-body-md text-body-md antialiased flex items-center justify-center p-4">
+<!-- Modal Overlay -->
+<div class="fixed inset-0 bg-primary/40 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+<!-- Modal Container -->
+<div class="bg-surface rounded-xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] w-full max-w-[600px] border border-outline-variant overflow-hidden flex flex-col max-h-[921px]">
+<!-- Modal Header -->
+<div class="px-scale-24 py-scale-16 border-b border-outline-variant flex justify-between items-center bg-surface-container-lowest sticky top-0 z-10">
+<h2 class="font-title-md text-title-md text-on-surface">Duyệt Lệnh Cắt Mooc &amp; Lưu Hub - #112233</h2>
+<button aria-label="Đóng" class="text-on-surface-variant hover:text-primary transition-colors focus:outline-none rounded-full p-1 hover:bg-surface-container-low">
+<span class="material-symbols-outlined">close</span>
+</button>
+</div>
+<!-- Modal Body (Scrollable) -->
+<div class="p-scale-24 flex-1 overflow-y-auto custom-scrollbar flex flex-col gap-scale-24 bg-surface-container-lowest">
+<!-- Reason Block -->
+<div class="bg-surface-container-low rounded-lg p-scale-16 border border-outline-variant flex gap-scale-12 items-start">
+<span class="material-symbols-outlined text-secondary mt-0.5">info</span>
+<div>
+<span class="font-label-caps text-label-caps text-on-surface-variant uppercase mb-1 block">Lý do</span>
+<p class="font-body-md text-body-md text-on-surface">Tài xế Nguyễn Văn A chuẩn bị vào khung giờ cấm cảng. Cần cắt mooc để đổi đầu kéo khác.</p>
+</div>
+</div>
+<!-- Hub Selection Section -->
+<div>
+<h3 class="font-label-md text-label-md text-on-surface mb-scale-12 font-medium">Đề xuất Hub tiếp nhận</h3>
+<div class="flex flex-col gap-scale-12">
+<!-- Hub Card 1 (Selected/Recommended) -->
+<label class="relative block cursor-pointer group">
+<input checked="" class="peer sr-only" name="hub_selection" type="radio" value="hub1"/>
+<div class="rounded-lg border-2 border-primary bg-surface-container-lowest p-scale-16 transition-all peer-checked:bg-secondary-container/20 group-hover:bg-surface-container-low">
+<div class="flex justify-between items-start mb-scale-8">
+<div class="flex items-center gap-scale-8">
+<div class="w-4 h-4 rounded-full border-2 border-primary flex items-center justify-center relative">
+<div class="w-2 h-2 rounded-full bg-primary absolute"></div>
+</div>
+<span class="font-title-md text-title-md text-on-surface">Hub KCN Lớn</span>
+</div>
+<span class="bg-[#e8f5e9] text-[#2e7d32] font-label-caps text-label-caps px-2 py-0.5 rounded-full border border-[#c8e6c9]">Tối ưu</span>
+</div>
+<div class="pl-scale-24 flex flex-col gap-scale-4 mt-scale-8">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">warehouse</span> Sức chứa:</span>
+<span class="text-on-surface font-medium">Trống 20 slot</span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">local_shipping</span> Xe chuyên dụng:</span>
+<span class="text-on-surface font-medium">Sẵn sàng 4/4</span>
+</div>
+</div>
+</div>
+</label>
+<!-- Hub Card 2 -->
+<label class="relative block cursor-pointer group">
+<input class="peer sr-only" name="hub_selection" type="radio" value="hub2"/>
+<div class="rounded-lg border border-outline-variant bg-surface-container-lowest p-scale-16 transition-all peer-checked:border-primary peer-checked:border-2 peer-checked:bg-secondary-container/20 group-hover:bg-surface-container-low">
+<div class="flex justify-between items-start mb-scale-8">
+<div class="flex items-center gap-scale-8">
+<div class="w-4 h-4 rounded-full border border-outline flex items-center justify-center relative peer-checked:border-primary">
+</div>
+<span class="font-title-md text-title-md text-on-surface group-hover:text-primary transition-colors">Hub KCN 2</span>
+</div>
+<span class="bg-[#fff3e0] text-[#e65100] font-label-caps text-label-caps px-2 py-0.5 rounded-full border border-[#ffe0b2]">Cảnh báo quá tải</span>
+</div>
+<div class="pl-scale-24 flex flex-col gap-scale-4 mt-scale-8">
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">warehouse</span> Sức chứa:</span>
+<span class="text-on-surface font-medium">Trống 5 slot</span>
+</div>
+<div class="flex justify-between items-center text-body-sm font-body-sm">
+<span class="text-on-surface-variant flex items-center gap-2"><span class="material-symbols-outlined text-[16px]">local_shipping</span> Xe chuyên dụng:</span>
+<span class="text-on-surface font-medium">Bận 1/1</span>
+</div>
+</div>
+</div>
+</label>
+</div>
+</div>
+<!-- Custom Action Block: Dispatch Tractor -->
+<div class="bg-surface-container-low rounded-lg p-scale-16 border border-outline-variant">
+<h4 class="font-label-md text-label-md text-on-surface mb-scale-12 font-medium flex items-center gap-2">
+<span class="material-symbols-outlined text-[20px] text-secondary">manage_accounts</span>
+                        Điều phối Đầu Kéo tiếp ứng (Tùy chọn)
+                    </h4>
+<div class="relative">
+<select class="w-full h-10 pl-3 pr-10 text-body-md font-body-md bg-surface-container-lowest border border-outline-variant rounded-md appearance-none focus:outline-none focus:ring-2 focus:ring-primary/10 focus:border-primary transition-colors text-on-surface">
+<option disabled="" hidden="" selected="" value="">Chọn đầu kéo đang rảnh tại Hub...</option>
+<option value="tk1">Đầu kéo 51C-123.45 (Tài xế B)</option>
+<option value="tk2">Đầu kéo 51C-678.90 (Tài xế C)</option>
+</select>
+<div class="pointer-events-none absolute inset-y-0 right-0 flex items-center px-2 text-on-surface-variant">
+<span class="material-symbols-outlined">expand_more</span>
+</div>
+</div>
+<p class="mt-scale-8 text-body-sm font-body-sm text-on-surface-variant">Hoặc để trống nếu chỉ muốn lưu bãi và phân công sau.</p>
+</div>
+</div>
+<!-- Modal Footer -->
+<div class="px-scale-24 py-scale-16 border-t border-outline-variant bg-surface-container-lowest flex justify-between items-center gap-scale-12 sticky bottom-0 z-10">
+<button class="h-10 px-scale-16 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors focus:outline-none focus:ring-2 focus:ring-primary/10">
+                    Hủy
+                </button>
+<div class="flex gap-scale-12">
+<button class="h-10 px-scale-16 bg-surface-container-lowest border border-outline-variant text-on-surface font-label-md text-label-md rounded hover:bg-surface-container-low transition-colors focus:outline-none focus:ring-2 focus:ring-primary/10">
+                        Đổi Hub khác
+                    </button>
+<button class="h-10 px-scale-16 bg-primary text-on-primary font-label-md text-label-md rounded hover:bg-on-surface transition-colors focus:outline-none focus:ring-2 focus:ring-primary/20 flex items-center gap-2">
+                        Xác nhận Lưu Hub
+                    </button>
+</div>
+</div>
+</div>
+</div>
+</body></html>

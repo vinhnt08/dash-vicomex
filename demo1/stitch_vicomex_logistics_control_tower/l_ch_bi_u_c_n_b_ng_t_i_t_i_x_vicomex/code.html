@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+
+<html lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Lịch biểu &amp; Cân bằng khối lượng công việc | Vicomex</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Public+Sans:wght@300;400;500;600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    colors: {
+                        primary: "#0052CC",
+                        "on-primary": "#FFFFFF",
+                        "primary-container": "#D6E4FF",
+                        "on-primary-container": "#001A41",
+                        surface: "#F8FAFC",
+                        "on-surface": "#0F172A",
+                        "surface-container-low": "#FFFFFF",
+                        "surface-container-high": "#F1F5F9",
+                        "outline-variant": "#E2E8F0",
+                        "on-surface-variant": "#64748B",
+                        success: "#10B981",
+                        warning: "#F59E0B",
+                        error: "#EF4444",
+                    },
+                    borderRadius: {
+                        "DEFAULT": "0.25rem",
+                        "lg": "0.5rem",
+                        "xl": "0.75rem",
+                        "full": "9999px"
+                    },
+                    fontFamily: {
+                        headline: ["Public Sans", "sans-serif"],
+                        display: ["Public Sans", "sans-serif"],
+                        body: ["Public Sans", "sans-serif"],
+                        label: ["Public Sans", "sans-serif"]
+                    }
+                },
+            },
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+            vertical-align: middle;
+        }
+        .striped-red {
+            background: repeating-linear-gradient(
+                45deg,
+                #fee2e2,
+                #fee2e2 10px,
+                #fecaca 10px,
+                #fecaca 20px
+            );
+            border: 1px solid #ef4444;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 8px;
+            width: 8px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        .timeline-grid {
+            background-size: 100px 100%;
+            background-image: linear-gradient(to right, #e2e8f0 1px, transparent 1px);
+        }
+    </style>
+</head>
+<body class="bg-surface font-body text-on-surface">
+<!-- SideNavBar Shell -->
+<aside class="w-60 h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col py-6 gap-2 z-50">
+<div class="px-6 mb-8">
+<h1 class="font-headline-lg text-2xl font-bold text-primary">Vicomex</h1>
+<p class="text-xs text-on-surface-variant font-medium">Logistics Enterprise</p>
+</div>
+<nav class="flex flex-col px-3 gap-1">
+<!-- Nav Items Mapping from JSON Logic -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span class="text-sm font-medium">Dashboard</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">map</span>
+<span class="text-sm font-medium">Real-time Map</span>
+</a>
+<!-- ACTIVE STATE: Lịch biểu Tài xế (Mapped to Smart Dispatch or custom logic) -->
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-primary font-bold border-r-4 border-primary bg-primary-container/20" href="#">
+<span class="material-symbols-outlined" style="font-variation-settings: 'FILL' 1;">speed</span>
+<span class="text-sm">Smart Dispatch</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span class="text-sm font-medium">Order Management</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">conveyor_belt</span>
+<span class="text-sm font-medium">Resource Management</span>
+</a>
+<a class="flex items-center gap-3 px-3 py-2.5 rounded-lg text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span class="text-sm font-medium">Costs</span>
+</a>
+</nav>
+<div class="mt-auto px-6 py-4 border-t border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary font-bold text-xs">AD</div>
+<div class="overflow-hidden">
+<p class="text-xs font-bold truncate">Admin User</p>
+<p class="text-[10px] text-on-surface-variant truncate">Dispatcher Center</p>
+</div>
+</div>
+</div>
+</aside>
+<!-- TopNavBar Shell -->
+<header class="fixed top-0 right-0 left-60 h-16 bg-surface border-b border-outline-variant flex justify-between items-center px-8 z-40">
+<div class="flex items-center gap-4">
+<div class="relative">
+<span class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-on-surface-variant text-lg">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-high border-none rounded-full text-sm w-80 focus:ring-2 focus:ring-primary/20 transition-shadow" placeholder="Tìm kiếm tài xế, chuyến hàng..." type="text"/>
+</div>
+</div>
+<div class="flex items-center gap-6">
+<div class="text-right">
+<p class="text-sm font-semibold text-on-surface">Control Tower</p>
+<p class="text-[10px] text-on-surface-variant uppercase tracking-wider">Operational Mode</p>
+</div>
+<button class="relative p-2 text-on-surface-variant hover:text-primary transition-all">
+<span class="material-symbols-outlined">notifications</span>
+<span class="absolute top-2 right-2 w-2 h-2 bg-error rounded-full border-2 border-surface"></span>
+</button>
+<div class="w-10 h-10 rounded-full border-2 border-outline-variant overflow-hidden cursor-pointer">
+<img class="w-full h-full object-cover" data-alt="Close up portrait of a professional male operations manager with a sharp, clean-cut appearance. He is wearing a professional light blue shirt and sitting in a bright, modern corporate environment with soft, high-key lighting. The overall mood is focused, reliable, and corporate, aligning with a premium logistics software aesthetic." src="https://lh3.googleusercontent.com/aida-public/AB6AXuCYyYDq9wGWQNeWm4edhxqCZXCrTgvkvd054CKLxCuu3WYbvwVmHpDQPFMm_hnAxLcC3rvltq59KdakYmaydHwc6SWrhCswiXpKKtpbAfjGC9TSrbk-eHZRBnEl_DCglRaO-7x_yCXP81fzjfDDh79ttW8I0kw1kocc0ZY2MkoVuU0mPmpCzkFw-3Y-DERb4UrqNxGZYWbVKM8hdwOVTvSQoi0zHjdRHi1nt8D2WZ9nUcoFzpFd_PB7biRTSWu1IdLQgTtEEbX6Yojj"/>
+</div>
+</div>
+</header>
+<!-- Main Content Canvas -->
+<main class="ml-60 pt-16 min-h-screen p-8 bg-surface">
+<!-- Header Section -->
+<div class="mb-8 flex justify-between items-end">
+<div>
+<nav class="flex items-center gap-2 text-xs text-on-surface-variant mb-2">
+<span>Điều phối</span>
+<span class="material-symbols-outlined text-sm">chevron_right</span>
+<span class="text-primary font-medium">Lịch biểu</span>
+</nav>
+<h2 class="text-3xl font-extrabold tracking-tight text-on-surface">Lịch biểu &amp; Cân bằng khối lượng công việc</h2>
+</div>
+<div class="flex gap-3">
+<button class="px-4 py-2 bg-white border border-outline-variant rounded-lg text-sm font-semibold flex items-center gap-2 hover:bg-surface-container-high transition-colors">
+<span class="material-symbols-outlined text-lg">filter_list</span>
+                    Bộ lọc đội xe
+                </button>
+<button class="px-4 py-2 bg-primary text-white rounded-lg text-sm font-semibold flex items-center gap-2 hover:opacity-90 transition-opacity shadow-lg shadow-primary/20">
+<span class="material-symbols-outlined text-lg">add_task</span>
+                    Phân công mới
+                </button>
+</div>
+</div>
+<!-- KPI Cards Section -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+<!-- Card 1 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between group hover:border-success/50 transition-colors">
+<div>
+<p class="text-sm font-medium text-on-surface-variant mb-1">Tài xế đang rảnh</p>
+<h3 class="text-4xl font-extrabold text-on-surface">05</h3>
+</div>
+<div class="w-14 h-14 bg-success/10 rounded-full flex items-center justify-center text-success">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">person_check</span>
+</div>
+</div>
+<!-- Card 2 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between group hover:border-primary/50 transition-colors">
+<div>
+<p class="text-sm font-medium text-on-surface-variant mb-1">Đang trên tuyến</p>
+<h3 class="text-4xl font-extrabold text-on-surface">40</h3>
+</div>
+<div class="w-14 h-14 bg-primary/10 rounded-full flex items-center justify-center text-primary">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">local_shipping</span>
+</div>
+</div>
+<!-- Card 3 -->
+<div class="bg-white p-6 rounded-xl border border-outline-variant shadow-sm flex items-center justify-between group border-l-4 border-l-error">
+<div>
+<p class="text-sm font-medium text-on-surface-variant mb-1">Đang trong giờ cấm cảng</p>
+<h3 class="text-4xl font-extrabold text-error">05</h3>
+</div>
+<div class="w-14 h-14 bg-error/10 rounded-full flex items-center justify-center text-error">
+<span class="material-symbols-outlined text-3xl" style="font-variation-settings: 'FILL' 1;">warning</span>
+</div>
+</div>
+</div>
+<!-- Timeline Section -->
+<div class="bg-white border border-outline-variant rounded-xl overflow-hidden shadow-sm">
+<!-- Timeline Header / Time Legend -->
+<div class="flex border-b border-outline-variant bg-surface-container-low sticky top-0 z-20">
+<div class="w-64 flex-shrink-0 p-4 font-bold text-sm text-on-surface-variant border-r border-outline-variant">
+                    DANH SÁCH TÀI XẾ
+                </div>
+<div class="flex-grow flex overflow-x-auto custom-scrollbar">
+<!-- Hours -->
+<div class="flex min-w-[1200px] h-12">
+<template id="hour-template">
+<div class="w-[100px] flex-shrink-0 flex items-center justify-center text-[11px] font-bold text-on-surface-variant border-r border-outline-variant/50">
+                                08:00
+                            </div>
+</template>
+<!-- Dynamic hours generation via JS below -->
+<div class="flex w-full" id="hours-container"></div>
+</div>
+</div>
+</div>
+<!-- Scrollable Content -->
+<div class="max-h-[600px] overflow-y-auto overflow-x-auto custom-scrollbar">
+<!-- Group: Đội Vận Hành 1 -->
+<div class="bg-surface-container-high/30 px-4 py-2 border-b border-outline-variant text-xs font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">groups</span>
+                    ĐỘI VẬN HÀNH 1
+                </div>
+<!-- Driver Row 1 -->
+<div class="flex border-b border-outline-variant group">
+<div class="w-64 flex-shrink-0 p-4 border-r border-outline-variant bg-white sticky left-0 z-10 group-hover:bg-slate-50 transition-colors">
+<div class="flex flex-col gap-1">
+<span class="font-bold text-sm">Nguyễn Văn An</span>
+<span class="text-[10px] text-on-surface-variant">Biển số: 51C-123.45</span>
+<div class="mt-2 flex items-center gap-2">
+<span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-on-surface-variant">Số chuyến: 12 chuyến</span>
+</div>
+</div>
+</div>
+<div class="flex-grow relative min-w-[1200px] h-20 timeline-grid bg-white">
+<!-- Type 1: Solid Blue Pill -->
+<div class="absolute top-4 left-[50px] w-[300px] h-10 bg-primary rounded-full flex items-center px-4 text-white text-[11px] font-bold shadow-sm z-10 border border-primary-container">
+                            Chạy Cont #123 (Tây Ninh -&gt; HCM)
+                        </div>
+<!-- Type 3: Red Striped Overlay -->
+<div class="absolute top-0 left-[600px] w-[200px] h-full striped-red opacity-60 z-0 flex items-center justify-center">
+<span class="text-[9px] font-bold text-error uppercase rotate-90 whitespace-nowrap">Cấm Cảng</span>
+</div>
+<!-- Type 2: Light Gray Pill -->
+<div class="absolute top-4 left-[900px] w-[150px] h-10 bg-surface-container-high border border-outline-variant rounded-full flex items-center px-4 text-on-surface-variant text-[11px] font-medium italic">
+                            Nghỉ ngơi / Chờ lệnh
+                        </div>
+</div>
+</div>
+<!-- Driver Row 2 (Low Trips Highlight) -->
+<div class="flex border-b border-outline-variant group">
+<div class="w-64 flex-shrink-0 p-4 border-r border-outline-variant bg-white sticky left-0 z-10 group-hover:bg-slate-50 transition-colors">
+<div class="flex flex-col gap-1">
+<span class="font-bold text-sm">Trần Hữu Bình</span>
+<span class="text-[10px] text-on-surface-variant">Biển số: 51C-987.65</span>
+<div class="mt-2 flex flex-col gap-1">
+<span class="text-[10px] bg-warning/10 text-warning px-2 py-0.5 rounded font-bold border border-warning/20">Thiếu chuyến - Ưu tiên</span>
+<span class="text-[10px] text-on-surface-variant">Số chuyến: 02 chuyến</span>
+</div>
+</div>
+</div>
+<div class="flex-grow relative min-w-[1200px] h-20 timeline-grid bg-white">
+<div class="absolute top-4 left-[400px] w-[250px] h-10 bg-primary rounded-full flex items-center px-4 text-white text-[11px] font-bold shadow-sm z-10">
+                            Chạy Cont #128 (Long An -&gt; Cát Lái)
+                        </div>
+</div>
+</div>
+<!-- Group: Đội Vận Hành 2 -->
+<div class="bg-surface-container-high/30 px-4 py-2 border-b border-outline-variant text-xs font-bold text-primary flex items-center gap-2">
+<span class="material-symbols-outlined text-sm">groups</span>
+                    ĐỘI VẬN HÀNH 2
+                </div>
+<!-- Driver Row 3 -->
+<div class="flex border-b border-outline-variant group">
+<div class="w-64 flex-shrink-0 p-4 border-r border-outline-variant bg-white sticky left-0 z-10 group-hover:bg-slate-50 transition-colors">
+<div class="flex flex-col gap-1">
+<span class="font-bold text-sm">Lê Minh Cường</span>
+<span class="text-[10px] text-on-surface-variant">Biển số: 51D-456.78</span>
+<div class="mt-2">
+<span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-on-surface-variant">Số chuyến: 08 chuyến</span>
+</div>
+</div>
+</div>
+<div class="flex-grow relative min-w-[1200px] h-20 timeline-grid bg-white">
+<div class="absolute top-0 left-[0px] w-[150px] h-full striped-red opacity-60 z-0 flex items-center justify-center">
+<span class="text-[9px] font-bold text-error uppercase rotate-90 whitespace-nowrap">Cấm Cảng</span>
+</div>
+<div class="absolute top-4 left-[200px] w-[400px] h-10 bg-primary rounded-full flex items-center px-4 text-white text-[11px] font-bold shadow-sm z-10">
+                            Chạy Cont #145 (Bình Dương -&gt; Cái Mép)
+                        </div>
+</div>
+</div>
+<!-- Driver Row 4 -->
+<div class="flex border-b border-outline-variant group">
+<div class="w-64 flex-shrink-0 p-4 border-r border-outline-variant bg-white sticky left-0 z-10 group-hover:bg-slate-50 transition-colors">
+<div class="flex flex-col gap-1">
+<span class="font-bold text-sm">Phạm Quốc Dũng</span>
+<span class="text-[10px] text-on-surface-variant">Biển số: 51C-555.21</span>
+<div class="mt-2">
+<span class="text-[10px] bg-slate-100 px-2 py-0.5 rounded text-on-surface-variant">Số chuyến: 15 chuyến</span>
+</div>
+</div>
+</div>
+<div class="flex-grow relative min-w-[1200px] h-20 timeline-grid bg-white">
+<div class="absolute top-4 left-[0px] w-[1200px] h-10 bg-surface-container-high border border-outline-variant rounded-full flex items-center px-4 text-on-surface-variant text-[11px] font-medium italic">
+                            Đang nghỉ phép (P)
+                        </div>
+</div>
+</div>
+</div>
+<!-- Timeline Legend Footer -->
+<div class="bg-surface-container-low p-4 border-t border-outline-variant flex gap-6 text-[11px] font-bold">
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-primary rounded"></div>
+<span>Đang vận chuyển</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 bg-surface-container-high border border-outline-variant rounded"></div>
+<span>Sẵn sàng / Nghỉ ngơi</span>
+</div>
+<div class="flex items-center gap-2">
+<div class="w-3 h-3 striped-red rounded opacity-60"></div>
+<span>Khung giờ cấm cảng</span>
+</div>
+</div>
+</div>
+</main>
+<script>
+        // Generate Hours 08:00 to 20:00
+        const container = document.getElementById('hours-container');
+        for (let i = 8; i <= 20; i++) {
+            const hourStr = i < 10 ? `0${i}:00` : `${i}:00`;
+            const div = document.createElement('div');
+            div.className = 'w-[100px] flex-shrink-0 flex items-center justify-center text-[11px] font-bold text-on-surface-variant border-r border-outline-variant/30';
+            div.innerText = hourStr;
+            container.appendChild(div);
+        }
+
+        // Simple interaction for hover states
+        document.querySelectorAll('.timeline-grid > div').forEach(block => {
+            block.addEventListener('mouseenter', () => {
+                if(!block.classList.contains('striped-red')) {
+                    block.style.transform = 'translateY(-2px)';
+                    block.style.transition = 'transform 0.2s ease';
+                }
+            });
+            block.addEventListener('mouseleave', () => {
+                block.style.transform = 'translateY(0)';
+            });
+        });
+    </script>
+</body></html>

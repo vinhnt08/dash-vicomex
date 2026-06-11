@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+
+<html class="light" lang="vi"><head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+<title>Quản lý Nghiệp vụ Đặc thù - Vicomex</title>
+<script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Hanken+Grotesk:wght@400;600;700&amp;family=Inter:wght@400;500;600;700&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+<script id="tailwind-config">
+        tailwind.config = {
+            darkMode: "class",
+            theme: {
+                extend: {
+                    "colors": {
+                        "on-secondary-fixed-variant": "#38485d",
+                        "on-secondary-fixed": "#0b1c30",
+                        "primary-container": "#131b2e",
+                        "on-surface": "#1b1b1d",
+                        "error-container": "#ffdad6",
+                        "surface-dim": "#dcd9db",
+                        "on-primary-fixed": "#131b2e",
+                        "secondary-fixed": "#d3e4fe",
+                        "on-secondary": "#ffffff",
+                        "secondary": "#505f76",
+                        "on-error-container": "#93000a",
+                        "secondary-container": "#d0e1fb",
+                        "surface-container-high": "#eae7e9",
+                        "on-secondary-container": "#54647a",
+                        "tertiary-fixed": "#fcdeb5",
+                        "on-surface-variant": "#45464d",
+                        "surface-container-low": "#f6f3f5",
+                        "inverse-surface": "#303032",
+                        "on-background": "#1b1b1d",
+                        "on-tertiary-fixed-variant": "#574425",
+                        "primary": "#000000",
+                        "error": "#ba1a1a",
+                        "background": "#fcf8fa",
+                        "outline": "#76777d",
+                        "surface-tint": "#565e74",
+                        "outline-variant": "#c6c6cd",
+                        "secondary-fixed-dim": "#b7c8e1",
+                        "on-tertiary": "#ffffff",
+                        "on-primary": "#ffffff",
+                        "on-primary-container": "#7c839b",
+                        "surface-container-highest": "#e4e2e4",
+                        "on-error": "#ffffff",
+                        "inverse-on-surface": "#f3f0f2",
+                        "surface-container-lowest": "#ffffff",
+                        "on-tertiary-container": "#98805d",
+                        "surface-container": "#f0edef",
+                        "inverse-primary": "#bec6e0",
+                        "tertiary-fixed-dim": "#dec29a",
+                        "surface": "#fcf8fa",
+                        "on-tertiary-fixed": "#271901",
+                        "on-primary-fixed-variant": "#3f465c",
+                        "tertiary-container": "#271901",
+                        "surface-variant": "#e4e2e4",
+                        "primary-fixed-dim": "#bec6e0",
+                        "surface-bright": "#fcf8fa",
+                        "tertiary": "#000000",
+                        "primary-fixed": "#dae2fd"
+                    },
+                    "borderRadius": {
+                        "DEFAULT": "0.125rem",
+                        "lg": "0.25rem",
+                        "xl": "0.5rem",
+                        "full": "0.75rem"
+                    },
+                    "spacing": {
+                        "scale-16": "16px",
+                        "margin-mobile": "16px",
+                        "scale-48": "48px",
+                        "scale-4": "4px",
+                        "margin-desktop": "32px",
+                        "gutter": "24px",
+                        "scale-8": "8px",
+                        "scale-24": "24px",
+                        "scale-12": "12px",
+                        "container-max": "1440px",
+                        "scale-32": "32px"
+                    },
+                    "fontFamily": {
+                        "headline-lg": ["Hanken Grotesk"],
+                        "display-lg": ["Hanken Grotesk"],
+                        "title-md": ["Inter"],
+                        "body-md": ["Inter"],
+                        "label-md": ["Inter"],
+                        "body-sm": ["Inter"],
+                        "headline-lg-mobile": ["Hanken Grotesk"],
+                        "label-caps": ["Inter"]
+                    },
+                    "fontSize": {
+                        "headline-lg": ["32px", {"lineHeight": "40px", "letterSpacing": "-0.01em", "fontWeight": "600"}],
+                        "display-lg": ["48px", {"lineHeight": "56px", "letterSpacing": "-0.02em", "fontWeight": "700"}],
+                        "title-md": ["18px", {"lineHeight": "28px", "fontWeight": "600"}],
+                        "body-md": ["16px", {"lineHeight": "24px", "fontWeight": "400"}],
+                        "label-md": ["14px", {"lineHeight": "20px", "fontWeight": "500"}],
+                        "body-sm": ["14px", {"lineHeight": "20px", "fontWeight": "400"}],
+                        "headline-lg-mobile": ["24px", {"lineHeight": "32px", "fontWeight": "600"}],
+                        "label-caps": ["12px", {"lineHeight": "16px", "letterSpacing": "0.05em", "fontWeight": "600"}]
+                    }
+                }
+            }
+        }
+    </script>
+<style>
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+        }
+        .material-symbols-outlined[data-weight="fill"] {
+            font-variation-settings: 'FILL' 1;
+        }
+        
+        /* Drag and Drop minimal styles */
+        .kanban-col {
+            min-height: 500px;
+        }
+    </style>
+</head>
+<body class="bg-background text-on-background font-body-md font-sans antialiased overflow-x-hidden min-h-screen">
+<!-- SideNavBar -->
+<nav class="w-60 h-screen fixed left-0 top-0 bg-surface-container-low border-r border-outline-variant flex flex-col py-scale-24 gap-scale-8 z-50">
+<div class="px-gutter mb-8">
+<h1 class="font-headline-lg text-headline-lg font-bold text-primary truncate" title="Vicomex">Vicomex</h1>
+<p class="font-body-sm text-body-sm text-on-surface-variant truncate">Logistics Enterprise</p>
+</div>
+<ul class="flex-1 flex flex-col font-body-md text-body-md">
+<li>
+<a class="flex items-center gap-3 px-gutter py-3 text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">dashboard</span>
+<span>Dashboard</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-gutter py-3 text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">map</span>
+<span>Real-time Map</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-gutter py-3 text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">speed</span>
+<span>Smart Dispatch</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-gutter py-3 text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">inventory_2</span>
+<span>Order Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-gutter py-3 text-primary font-bold border-r-4 border-primary bg-surface-container-high transition-colors opacity-80 duration-150" href="#">
+<span class="material-symbols-outlined" data-weight="fill">conveyor_belt</span>
+<span>Resource Management</span>
+</a>
+</li>
+<li>
+<a class="flex items-center gap-3 px-gutter py-3 text-on-surface-variant opacity-70 hover:bg-surface-container-high transition-colors" href="#">
+<span class="material-symbols-outlined">payments</span>
+<span>Costs</span>
+</a>
+</li>
+</ul>
+<div class="px-gutter mt-auto pt-6 border-t border-outline-variant">
+<div class="flex items-center gap-3">
+<div class="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container">
+<span class="font-label-md text-label-md">AD</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md text-on-surface">Admin User</span>
+<span class="font-label-caps text-label-caps text-on-surface-variant">Dispatcher</span>
+</div>
+</div>
+</div>
+</nav>
+<!-- Main Content Wrapper -->
+<div class="ml-60 flex flex-col min-h-screen">
+<!-- TopNavBar -->
+<header class="bg-surface docked full-width top-0 sticky z-40 border-b border-outline-variant flex justify-between items-center h-16 px-gutter focus:ring-2 focus:ring-primary/10 transition-shadow">
+<div class="flex items-center">
+<span class="font-title-md text-title-md font-semibold text-on-surface">Control Tower</span>
+</div>
+<div class="flex items-center gap-4">
+<div class="relative flex items-center">
+<span class="material-symbols-outlined absolute left-3 text-on-surface-variant">search</span>
+<input class="pl-10 pr-4 py-2 bg-surface-container-lowest border border-outline-variant rounded-full text-body-sm font-body-sm text-on-surface placeholder-on-surface-variant focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary w-64" placeholder="Search orders, vehicles..." type="text"/>
+</div>
+<button class="w-10 h-10 flex items-center justify-center rounded-full text-on-surface-variant hover:text-primary transition-all hover:bg-surface-container-low">
+<span class="material-symbols-outlined">notifications</span>
+</button>
+<img alt="User Profile" class="w-8 h-8 rounded-full border border-outline-variant cursor-pointer" src="https://lh3.googleusercontent.com/aida-public/AB6AXuCWRA4ZW3-fp337UHYa-ogoxnLHA2Ncd-_Nde4c1ScjG9lPUutzhQnHOTIV0wzPrW9GgKN6SQcmuQ8LDIyQUIFmy6Eei9OHEortfvxms_51GhPDraaqPc89Na4FfMBWqVK1MPMGM2ZFzjQAAq4f6AZqN-BOKQadbPhtN09TNj1poxgjVrf43_sDG8nEJy4FYu_JdJnd7Xz6TUgyLff7OeRGfM0p0-EwpJFN9T-uvpE6IU9Ie5dZafHjTqJJ32BWVVPxafcbS7x3uo0Z"/>
+</div>
+</header>
+<!-- Page Content -->
+<main class="flex-1 p-margin-desktop bg-surface-container-low overflow-y-auto">
+<!-- Page Header -->
+<div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
+<div>
+<h2 class="font-headline-lg text-headline-lg text-on-surface mb-2">Điều phối Nghiệp vụ: Cắt Mooc - Hạ Cont - Swap Cont</h2>
+<p class="font-body-md text-body-md text-on-surface-variant">Xử lý các tình huống phát sinh, tối ưu vòng xe và cân bằng tải trọng.</p>
+</div>
+<button class="bg-primary text-on-primary font-label-md text-label-md px-4 h-10 rounded shadow-sm hover:bg-primary/90 transition-colors flex items-center gap-2 whitespace-nowrap">
+<span class="material-symbols-outlined text-[20px]">add</span>
+                    Tạo Lệnh Nghiệp Vụ
+                </button>
+</div>
+<!-- Kanban Board -->
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+<!-- Column 1: CẮT MOOC -->
+<div class="kanban-col flex flex-col bg-surface-container rounded-lg p-4 border border-outline-variant/50">
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-outline-variant/50">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">link_off</span>
+                            CẮT MOOC
+                        </h3>
+<span class="bg-secondary-container text-on-secondary-container font-label-caps text-label-caps px-2 py-1 rounded-full">3 Lệnh chờ</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Card 1 -->
+<div class="bg-surface rounded-lg p-scale-24 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-grab">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Đổi đầu kéo - Tài xế cấm cảng</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+                                Tài xế Nguyễn Văn A bị cấm giờ vào cảng. Cần cắt mooc tại Hub 1.
+                            </p>
+<button class="w-full bg-surface-container-lowest text-primary font-label-md text-label-md h-9 rounded border border-outline-variant hover:border-primary transition-colors flex justify-center items-center">
+                                Điều phối Đầu kéo mới
+                            </button>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface rounded-lg p-scale-24 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-grab">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Đóng cont sớm</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+                                Cont #112233 đã đóng xong nhưng chưa đến ngày nộp cảng. Cắt mooc lưu tại Hub.
+                            </p>
+<button class="w-full bg-surface-container-lowest text-primary font-label-md text-label-md h-9 rounded border border-outline-variant hover:border-primary transition-colors flex justify-center items-center">
+                                Xác nhận lưu Hub
+                            </button>
+</div>
+</div>
+</div>
+<!-- Column 2: HẠ CONT -->
+<div class="kanban-col flex flex-col bg-surface-container rounded-lg p-4 border border-outline-variant/50">
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-outline-variant/50">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">arrow_downward</span>
+                            HẠ CONT
+                        </h3>
+<span class="bg-tertiary-fixed text-on-tertiary-fixed font-label-caps text-label-caps px-2 py-1 rounded-full">2 Lệnh chờ</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Card 1 -->
+<div class="bg-surface rounded-lg p-scale-24 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-grab">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Thiếu rơ mooc vận hành</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+                                Hạ tạm Cont #445566 tại Hub chuyên dụng để lấy rơ mooc đi chuyến khác.
+                            </p>
+<div class="bg-error-container/50 border border-error-container rounded p-2 mb-4">
+<p class="font-label-caps text-label-caps text-on-error-container flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                                    Lưu ý: Phí hạ dự kiến 150,000 VNĐ
+                                </p>
+</div>
+<button class="w-full bg-surface-container-lowest text-primary font-label-md text-label-md h-9 rounded border border-outline-variant hover:border-primary transition-colors flex justify-center items-center">
+                                Duyệt lệnh hạ
+                            </button>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface rounded-lg p-scale-24 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-grab">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Đóng cont sớm chờ nộp cảng</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-3">
+                                Hạ Cont #778899 tại Hub thuê ngoài.
+                            </p>
+<div class="bg-error-container/50 border border-error-container rounded p-2 mb-4">
+<p class="font-label-caps text-label-caps text-on-error-container flex items-center gap-1">
+<span class="material-symbols-outlined text-[14px]">warning</span>
+                                    Lưu ý: Phí lưu cont 100,000 VNĐ/ngày
+                                </p>
+</div>
+<button class="w-full bg-surface-container-lowest text-primary font-label-md text-label-md h-9 rounded border border-outline-variant hover:border-primary transition-colors flex justify-center items-center">
+                                Duyệt lệnh hạ
+                            </button>
+</div>
+</div>
+</div>
+<!-- Column 3: SWAP CONT -->
+<div class="kanban-col flex flex-col bg-surface-container rounded-lg p-4 border border-outline-variant/50">
+<div class="flex items-center justify-between mb-4 pb-2 border-b border-outline-variant/50">
+<h3 class="font-title-md text-title-md text-on-surface flex items-center gap-2">
+<span class="material-symbols-outlined text-secondary">swap_horiz</span>
+                            SWAP CONT
+                        </h3>
+<span class="bg-primary-fixed text-on-primary-fixed font-label-caps text-label-caps px-2 py-1 rounded-full">2 Lệnh chờ</span>
+</div>
+<div class="flex flex-col gap-4">
+<!-- Card 1 -->
+<div class="bg-surface rounded-lg p-scale-24 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-grab">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Ghép 2 Cont 20 (Kẹp cổ)</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+                                Ghép Cont #123 (Nhập) và Cont #456 (Xuất) để tiện đường giao Depot 2.
+                            </p>
+<button class="w-full bg-surface-container-lowest text-primary font-label-md text-label-md h-9 rounded border border-outline-variant hover:border-primary transition-colors flex justify-center items-center">
+                                Tiến hành Swap
+                            </button>
+</div>
+<!-- Card 2 -->
+<div class="bg-surface rounded-lg p-scale-24 border border-outline-variant shadow-sm hover:shadow-md transition-shadow cursor-grab">
+<h4 class="font-label-md text-label-md text-on-surface mb-2 font-semibold">Cân bằng tải trọng</h4>
+<p class="font-body-sm text-body-sm text-on-surface-variant mb-4">
+                                Đổi chéo rơ mooc để tránh quá tải trên tuyến Tây Ninh -&gt; HCM.
+                            </p>
+<button class="w-full bg-surface-container-lowest text-primary font-label-md text-label-md h-9 rounded border border-outline-variant hover:border-primary transition-colors flex justify-center items-center">
+                                Tiến hành Swap
+                            </button>
+</div>
+</div>
+</div>
+</div>
+</main>
+</div>
+</body></html>
