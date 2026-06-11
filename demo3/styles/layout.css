@@ -240,7 +240,10 @@
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-24); }
 .grid-layout { display: grid; grid-template-columns: 2fr 1fr; gap: var(--space-24); }
 
-.stack { display: flex; flex-direction: column; }
+.grid-4 > *, .grid-3 > *, .grid-2 > *, .grid-layout > * { min-width: 0; }
+
+.stack { display: flex; flex-direction: column; min-width: 0; }
+.stack > * { min-width: 0; }
 .stack--12 { gap: 12px; }
 .stack--16 { gap: 16px; }
 .stack--24 { gap: 24px; }
