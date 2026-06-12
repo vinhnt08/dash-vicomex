@@ -1,6 +1,5 @@
 const App = (() => {
   /* ── State ── */
-  let currentView = 'dashboard';
   let currentTab  = 'import';
 
   /* ── Cached DOM roots ── */
@@ -26,7 +25,6 @@ const App = (() => {
     if (navEl) navEl.classList.add('active');
 
     document.querySelector('.topbar__title').textContent = NAV_TITLES[view] || 'Control Tower';
-    currentView = view;
 
     if (view === 'orders')    renderOrders();
     if (view === 'resources') renderResources();
@@ -85,22 +83,8 @@ const App = (() => {
 
   /* ── Orders ── */
   function renderOrders() {
-    const { flows, importContainers, exportContainers } = DATA;
-
-    $('flow-cards').innerHTML = flows.map((f, i) => UI.flowCard(f, i === 0)).join('');
-
+    FlowBuilder.init();
     renderContainerTab();
-
-    /* Flow card click */
-    $$('.flow-card').forEach(card => {
-      card.addEventListener('click', () => {
-        $$('.flow-card').forEach(c => c.classList.remove('active'));
-        card.classList.add('active');
-      });
-      card.addEventListener('keydown', e => {
-        if (e.key === 'Enter' || e.key === ' ') card.click();
-      });
-    });
   }
 
   function renderContainerTab() {
@@ -114,7 +98,7 @@ const App = (() => {
 
   /* ── Resources / Nghiệp vụ ── */
   function renderResources() {
-    const { kanban, resources } = DATA;
+    const { kanban } = DATA;
 
     $('kanban-cat-mooc').innerHTML  = kanban.catMooc.map(c => UI.kanbanCard(c)).join('');
     $('kanban-ha-cont').innerHTML   = kanban.haCont.map(c => UI.kanbanCard(c)).join('');
@@ -170,13 +154,8 @@ const App = (() => {
     el.classList.add('open');
     el.querySelector('.modal')?.focus();
   }
-  function closeModal(id) {
-    const el = $(id);
-    if (el) el.classList.remove('open');
-  }
-
   /* ── Sidebar (mobile) ── */
-  const sidebar  = document.querySelector('.sidebar');
+  const sidebar        = document.querySelector('.sidebar');
   const sidebarOverlay = $('sidebar-overlay');
 
   function openSidebar() {
@@ -192,15 +171,12 @@ const App = (() => {
 
   /* ── Events ── */
   function bindEvents() {
-    /* Hamburger */
     $('btn-hamburger').addEventListener('click', () => {
       sidebar.classList.contains('open') ? closeSidebar() : openSidebar();
     });
 
-    /* Overlay click → close sidebar */
     sidebarOverlay.addEventListener('click', closeSidebar);
 
-    /* Nav */
     $$('.nav-item[data-view]').forEach(item => {
       item.addEventListener('click', () => {
         navigateTo(item.dataset.view);
@@ -208,7 +184,6 @@ const App = (() => {
       });
     });
 
-    /* Tabs (order management) */
     document.addEventListener('click', e => {
       const tab = e.target.closest('[data-tab]');
       if (tab && tab.closest('#view-orders')) {
@@ -217,22 +192,18 @@ const App = (() => {
       }
     });
 
-    /* Dispatch "assign" button */
     document.addEventListener('click', e => {
       const btn = e.target.closest('.js-assign');
       if (btn) {
-        const contId = btn.dataset.cont;
         openModal('modal-assign');
-        $('modal-assign-title').textContent = `Phân công Cont ${contId}`;
+        $('modal-assign-title').textContent = `Phân công Cont ${btn.dataset.cont}`;
       }
     });
 
-    /* Container detail button */
     document.addEventListener('click', e => {
       const btn = e.target.closest('.js-detail');
       if (btn) {
-        const contId = btn.dataset.id;
-        const item = DATA.importContainers.concat(DATA.exportContainers).find(x => x.id === contId);
+        const item = DATA.importContainers.concat(DATA.exportContainers).find(x => x.id === btn.dataset.id);
         if (item) {
           $('detail-cont-id-header').textContent = item.id;
           $('detail-client').textContent = item.client;
@@ -249,14 +220,12 @@ const App = (() => {
       }
     });
 
-    /* Driver detail button */
     document.addEventListener('click', e => {
       const btn = e.target.closest('.js-driver-detail');
       if (btn) {
-        const driverName = btn.dataset.driver;
-        const driver = DATA.drivers.find(d => d.name === driverName);
+        const driver = DATA.drivers.find(d => d.name === btn.dataset.driver);
         if (driver) {
-          $('detail-driver-name').textContent = driverName;
+          $('detail-driver-name').textContent = btn.dataset.driver;
           $('detail-driver-team').textContent = driver.team;
           $('detail-driver-trips').textContent = driver.trips + ' chuyến';
           $('detail-driver-points').textContent = driver.points + ' điểm';
@@ -268,40 +237,31 @@ const App = (() => {
       }
     });
 
-    /* Create order button */
     $$('button').forEach(btn => {
-      if (btn.textContent.includes('Tạo Lệnh Vận Chuyển') && btn.closest('.page-header')) {
+      if (btn.textContent.includes('Tạo Lệnh Vận Chuyển') && btn.closest('.page-header'))
         btn.addEventListener('click', () => openModal('modal-create-order'));
-      }
     });
 
-    /* Auto-route button */
     const autoBtn = $('btn-auto-route');
     if (autoBtn) autoBtn.addEventListener('click', () => {
       renderRoutesuggestions();
       openModal('modal-auto-route');
     });
 
-    /* Kanban action buttons → modal */
     document.addEventListener('click', e => {
       const btn = e.target.closest('[data-modal]');
       if (btn) openModal(btn.dataset.modal);
     });
 
-    /* Modal close buttons */
     document.addEventListener('click', e => {
       const closeBtn = e.target.closest('.js-modal-close, .modal__close');
       if (closeBtn) {
-        const overlay = closeBtn.closest('.overlay');
-        if (overlay) overlay.classList.remove('open');
+        closeBtn.closest('.overlay')?.classList.remove('open');
       }
-      /* Click outside modal */
-      if (e.target.classList.contains('overlay')) {
+      if (e.target.classList.contains('overlay'))
         e.target.classList.remove('open');
-      }
     });
 
-    /* Keyboard ESC */
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         $$('.overlay.open').forEach(el => el.classList.remove('open'));
@@ -309,12 +269,8 @@ const App = (() => {
       }
     });
 
-    /* Map dots tooltip placeholder */
-    $$('.map-dot').forEach(dot => {
-      dot.setAttribute('tabindex', '0');
-    });
+    $$('.map-dot').forEach(dot => dot.setAttribute('tabindex', '0'));
 
-    /* Tab view in system data */
     document.addEventListener('click', e => {
       const tab = e.target.closest('[data-sys-tab]');
       if (!tab) return;

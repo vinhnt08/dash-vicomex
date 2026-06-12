@@ -1,0 +1,7 @@
+const DATA = {
+  ...DATA_DASHBOARD,
+  ...DATA_CONTAINERS,
+  ...DATA_RESOURCES,
+  ...DATA_ROUTES,
+  templates: DATA_TEMPLATES,
+};
