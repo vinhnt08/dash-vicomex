@@ -391,6 +391,8 @@ const FlowBuilder = (() => {
           e.target.classList.contains('flow-node__port')) return;
       e.preventDefault();
       state.justDragged = false;
+      state.dragStartX = e.clientX;
+      state.dragStartY = e.clientY;
       const nr = div.getBoundingClientRect();
       state.dragging = { nodeId: node.id, ox: e.clientX - nr.left, oy: e.clientY - nr.top };
       div.style.zIndex = 10;
@@ -438,7 +440,9 @@ const FlowBuilder = (() => {
 
   function onMouseMove(e) {
     if (state.dragging) {
-      state.justDragged = true;
+      const dx = e.clientX - state.dragStartX;
+      const dy = e.clientY - state.dragStartY;
+      if (Math.abs(dx) > 4 || Math.abs(dy) > 4) state.justDragged = true;
       const canvas = document.getElementById('flow-canvas');
       const rect   = canvas.getBoundingClientRect();
       const node   = state.nodes.find(n => n.id === state.dragging.nodeId);
