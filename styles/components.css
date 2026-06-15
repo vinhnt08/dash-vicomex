@@ -1148,6 +1148,19 @@
 .fb-toast--success { background: var(--color-success-bg); color: var(--color-success-text); border: 1px solid var(--color-success-border); }
 .fb-toast .material-symbols-outlined { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
 
+/* Edit mode banner */
+.fb-edit-banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-24);
+  background: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  border-bottom: 1px solid var(--color-warning-border);
+  font-size: 13px;
+}
+.fb-edit-banner .material-symbols-outlined { font-size: 16px; }
+
 /* Shake animation for invalid node during connect */
 @keyframes fb-shake {
   0%,100% { transform: translateX(0); }

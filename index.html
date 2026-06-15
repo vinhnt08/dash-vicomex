@@ -247,6 +247,8 @@
         <div class="card" style="padding:0;overflow:hidden;margin-bottom:var(--space-24)">
           <!-- Template selector -->
           <div id="flow-template-selector" class="flow-template-selector"></div>
+          <!-- Edit mode banner -->
+          <div id="fb-edit-banner" class="fb-edit-banner" style="display:none"></div>
 
           <div class="card__header" style="flex-wrap:wrap;gap:12px;border-top:1px solid var(--color-outline-variant)">
             <div>
@@ -311,9 +313,10 @@
                 <tr>
                   <th>Mã Cont</th>
                   <th>Khách hàng</th>
-                  <th>Phân loại Luồng</th>
+                  <th>Luồng</th>
                   <th>Lộ trình</th>
                   <th>Trạng thái</th>
+                  <th>Tải hàng</th>
                   <th class="right">Hành động</th>
                 </tr>
               </thead>
@@ -826,8 +829,9 @@
             <div id="detail-status" style="display:inline-block"></div>
           </div>
         </div>
-        <div style="display:flex;gap:8px">
-          <span class="chip" style="font-size:12px" id="detail-laden-status"></span>
+        <div style="display:flex;gap:8px;align-items:center">
+          <span id="detail-laden-status"></span>
+          <span id="detail-truck" style="font-size:12px;color:var(--color-on-surface-variant)"></span>
         </div>
       </div>
       <div style="border-bottom:1px solid var(--color-outline-variant);padding-bottom:16px;margin-bottom:16px">
@@ -835,22 +839,25 @@
         <div style="display:flex;justify-content:space-between;font-size:13px;color:var(--color-on-surface)">
           <div>
             <p style="color:var(--color-on-surface-variant);font-size:11px;margin-bottom:2px">Tạo lệnh</p>
-            <p id="detail-created">23/06/2024 08:30</p>
+            <p id="detail-created"></p>
           </div>
           <div>
             <p style="color:var(--color-on-surface-variant);font-size:11px;margin-bottom:2px">Dự kiến giao</p>
-            <p id="detail-eta">25/06/2024 18:00</p>
+            <p id="detail-eta"></p>
           </div>
         </div>
       </div>
       <div>
         <p style="font-size:12px;font-weight:600;text-transform:uppercase;color:var(--color-on-surface-variant);margin-bottom:8px">Ghi chú</p>
-        <p style="font-size:13px;line-height:1.5;color:var(--color-on-surface);font-style:italic" id="detail-notes">Không có ghi chú</p>
+        <p style="font-size:13px;line-height:1.5;color:var(--color-on-surface);font-style:italic" id="detail-notes"></p>
       </div>
     </div>
     <div class="modal__footer">
       <button class="btn btn--secondary js-modal-close">Đóng</button>
-      <button class="btn btn--primary">Chỉnh sửa</button>
+      <button class="btn btn--primary js-modal-close js-edit-container" id="btn-edit-container">
+        <span class="material-symbols-outlined">edit</span>
+        Sửa Flow
+      </button>
     </div>
   </div>
 </div>

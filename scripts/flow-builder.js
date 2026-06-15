@@ -2,12 +2,15 @@ const FlowBuilder = (() => {
   const state = {
     nodes: [],
     edges: [],
-    drawing:    null,  // { fromId } while dragging a port handle
-    dragging:   null,  // { nodeId, ox, oy } while repositioning a node
+    drawing:    null,
+    dragging:   null,
     justDragged: false,
+    dragStartX: 0,
+    dragStartY: 0,
     counter: 0,
     template: null,    // { id, direction } | null
     modalEdges: [],    // topo-sorted, may be reordered by user in modal
+    editMode: null,    // { containerId } | null when editing existing container
   };
 
   let dragSrcIdx = null;
@@ -347,7 +350,33 @@ const FlowBuilder = (() => {
         showToast('Vui lòng chọn loại vận hành trước khi xác nhận.', 'error');
         return;
       }
+      const direction  = dirSelect?.value || state.template?.direction || 'import';
+      const trucks     = state.nodes.filter(n => n.type === 'truck');
+      const containers = state.nodes.filter(n => n.type === 'container');
+      const note       = document.getElementById('flow-confirm-note')?.value || '';
+      const route      = getRouteFromFlow();
+      const tmplId     = state.template?.id ?? null;
+      const tmplLabel  = tmplId ? (DATA.templates[direction]?.find(t => t.id === tmplId)?.label ?? null) : null;
+
+      const flowData = {
+        direction,
+        templateId:    tmplId,
+        templateLabel: tmplLabel,
+        route,
+        containerIds:  containers.map(n => n.sourceId || n.label),
+        truck:         trucks[0]?.label || '',
+        notes:         note,
+      };
+
       document.getElementById('modal-flow-confirm')?.classList.remove('open');
+
+      if (state.editMode) {
+        const editId = state.editMode.containerId;
+        state.editMode = null;
+        App.updateContainerFromFlow(editId, flowData);
+      } else {
+        App.createContainerFromFlow(flowData);
+      }
       clearCanvas();
     });
   }
@@ -845,11 +874,67 @@ const FlowBuilder = (() => {
     state.edges    = [];
     state.drawing  = null;
     state.dragging = null;
+    state.editMode = null;
     document.querySelectorAll('#flow-canvas .flow-node').forEach(el => el.remove());
     document.getElementById('fb-drawing-line')?.remove();
     closePicker();
     redrawEdges();
     updateEmpty();
+    updateEditModeBanner();
+  }
+
+  function updateEditModeBanner() {
+    const banner = document.getElementById('fb-edit-banner');
+    const btn    = document.getElementById('btn-submit-flow');
+    if (!banner) return;
+    if (state.editMode) {
+      banner.style.display = '';
+      banner.innerHTML = `<span class="material-symbols-outlined">edit</span> Đang chỉnh sửa flow của <strong>${state.editMode.containerId}</strong> &nbsp;·&nbsp; <button class="btn btn--ghost btn--compact" id="fb-cancel-edit">Hủy</button>`;
+      document.getElementById('fb-cancel-edit')?.addEventListener('click', () => {
+        state.editMode = null;
+        updateEditModeBanner();
+        clearCanvas();
+      });
+      if (btn) btn.innerHTML = '<span class="material-symbols-outlined">update</span> Cập nhật';
+    } else {
+      banner.style.display = 'none';
+      if (btn) btn.innerHTML = '<span class="material-symbols-outlined">check_circle</span> Tạo Lệnh';
+    }
+  }
+
+  function getRouteFromFlow() {
+    const sorted = topoSortEdges();
+    const seen   = new Set();
+    const route  = [];
+    sorted.forEach(edge => {
+      [edge.from, edge.to].forEach(id => {
+        if (!seen.has(id)) {
+          const n = state.nodes.find(n => n.id === id);
+          if (n && LOCATION_TYPES.has(n.type)) { seen.add(id); route.push(n.label); }
+        }
+      });
+    });
+    if (!route.length)
+      state.nodes.filter(n => LOCATION_TYPES.has(n.type)).forEach(n => route.push(n.label));
+    return route.join(' → ');
+  }
+
+  function editContainer(containerId) {
+    const allContainers = [...DATA.importContainers, ...DATA.exportContainers];
+    const cont = allContainers.find(c => c.id === containerId);
+    if (!cont) return;
+
+    const tmpl = DATA.templates[cont.direction]?.find(t => t.id === cont.templateId);
+    if (tmpl) applyTemplate(tmpl, cont.direction);
+    else clearCanvas();
+
+    state.editMode = { containerId };
+    updateEditModeBanner();
+
+    App.navigateTo('orders');
+    setTimeout(() => {
+      document.getElementById('flow-canvas')?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }, 150);
   }
 
   /* ── DRAFT ───────────────────────────────────────────────────── */
@@ -1038,8 +1123,21 @@ const FlowBuilder = (() => {
       if (routeContainer) renderRouteRows(routeContainer);
     }
 
+    const modalTitle = document.getElementById('modal-flow-confirm-title');
+    if (modalTitle) {
+      modalTitle.textContent = state.editMode
+        ? `Cập nhật Flow — ${state.editMode.containerId}`
+        : 'Xác nhận Tạo Lệnh Vận Chuyển';
+    }
+    const confirmBtn = document.getElementById('btn-confirm-flow-create');
+    if (confirmBtn) {
+      confirmBtn.innerHTML = state.editMode
+        ? '<span class="material-symbols-outlined">update</span> Xác nhận Cập nhật'
+        : '<span class="material-symbols-outlined">check</span> Xác nhận Tạo Lệnh';
+    }
+
     document.getElementById('modal-flow-confirm')?.classList.add('open');
   }
 
-  return { init, clearCanvas };
+  return { init, clearCanvas, editContainer };
 })();

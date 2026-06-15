@@ -90,10 +90,60 @@ const App = (() => {
   function renderContainerTab() {
     const items = currentTab === 'import' ? DATA.importContainers : DATA.exportContainers;
     $('container-tbody').innerHTML = UI.renderContainerTable(items);
-
     $$('#view-orders .tab').forEach(t => {
       t.classList.toggle('active', t.dataset.tab === currentTab);
     });
+  }
+
+  function createContainerFromFlow(flowData) {
+    const now = new Date();
+    const pad = n => String(n).padStart(2, '0');
+    const fmt = d => `${pad(d.getDate())}/${pad(d.getMonth()+1)}/${d.getFullYear()} ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+    const etaDate = new Date(now.getTime() + 3 * 86400000);
+
+    const ids = flowData.containerIds.length ? flowData.containerIds : [`CONT-NEW-${Date.now()}`];
+    ids.forEach(id => {
+      const entry = {
+        id,
+        client: '(Chưa gán)',
+        direction:   flowData.direction,
+        templateId:  flowData.templateId,
+        route:       flowData.route || '–',
+        status:      'Chờ điều phối',
+        statusType:  'neutral',
+        laden:       'Loaded',
+        truck:       flowData.truck,
+        createdAt:   fmt(now),
+        eta:         fmt(etaDate),
+        notes:       flowData.notes,
+      };
+      if (flowData.direction === 'import') DATA.importContainers.unshift(entry);
+      else DATA.exportContainers.unshift(entry);
+    });
+
+    currentTab = flowData.direction;
+    renderContainerTab();
+    setTimeout(() => {
+      document.querySelector('#view-orders .card:last-child')?.scrollIntoView({ behavior: 'smooth' });
+    }, 100);
+  }
+
+  function updateContainerFromFlow(containerId, flowData) {
+    const arrays = [DATA.importContainers, DATA.exportContainers];
+    for (const arr of arrays) {
+      const idx = arr.findIndex(c => c.id === containerId);
+      if (idx !== -1) {
+        arr[idx] = {
+          ...arr[idx],
+          ...(flowData.templateId ? { templateId: flowData.templateId } : {}),
+          ...(flowData.route      ? { route: flowData.route }           : {}),
+          ...(flowData.truck      ? { truck: flowData.truck }           : {}),
+          ...(flowData.notes      ? { notes: flowData.notes }           : {}),
+        };
+        break;
+      }
+    }
+    renderContainerTab();
   }
 
   /* ── Resources / Nghiệp vụ ── */
@@ -205,18 +255,31 @@ const App = (() => {
       if (btn) {
         const item = DATA.importContainers.concat(DATA.exportContainers).find(x => x.id === btn.dataset.id);
         if (item) {
+          const allTmpls = [...DATA.templates.import, ...DATA.templates.export];
+          const tmpl = allTmpls.find(t => t.id === item.templateId);
+
           $('detail-cont-id-header').textContent = item.id;
-          $('detail-client').textContent = item.client;
-          $('detail-flow').textContent = item.flow;
-          $('detail-flow-desc').textContent = item.flowDesc || '';
-          $('detail-route').textContent = item.route;
-          $('detail-status').innerHTML = UI.chip(item.status, item.statusType, true);
-          $('detail-laden-status').innerHTML = UI.chip(item.laden, item.laden === 'Empty' ? 'info' : 'success', false);
-          $('detail-created').textContent = '23/06/2024 08:30';
-          $('detail-eta').textContent = '25/06/2024 18:00';
-          $('detail-notes').textContent = 'Ưu tiên giao tại Hồ Chí Minh trước 18h';
+          $('detail-client').textContent          = item.client;
+          $('detail-flow').textContent            = tmpl ? tmpl.label : (item.templateId || '–');
+          $('detail-flow-desc').textContent       = tmpl ? tmpl.desc : '';
+          $('detail-route').textContent           = item.route;
+          $('detail-status').innerHTML            = UI.chip(item.status, item.statusType, true);
+          $('detail-laden-status').innerHTML      = UI.chip(item.laden === 'Empty' ? 'Rỗng' : 'Có hàng', item.laden === 'Empty' ? 'info' : 'success', false);
+          $('detail-truck').textContent           = item.truck ? `· Đầu kéo: ${item.truck}` : '';
+          $('detail-created').textContent         = item.createdAt || '–';
+          $('detail-eta').textContent             = item.eta || '–';
+          $('detail-notes').textContent           = item.notes || 'Không có ghi chú';
+          $('btn-edit-container')?.setAttribute('data-id', item.id);
           openModal('modal-container-detail');
         }
+      }
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.js-edit-container');
+      if (btn) {
+        $$('.overlay.open').forEach(el => el.classList.remove('open'));
+        FlowBuilder.editContainer(btn.dataset.id);
       }
     });
 
@@ -303,7 +366,7 @@ const App = (() => {
     animateCounters();
   }
 
-  return { init, navigateTo };
+  return { init, navigateTo, createContainerFromFlow, updateContainerFromFlow };
 })();
 
 document.addEventListener('DOMContentLoaded', App.init);

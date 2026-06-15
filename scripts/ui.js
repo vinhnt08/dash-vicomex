@@ -40,14 +40,31 @@ const UI = {
   },
 
   containerRow(item, idx) {
+    const allTemplates = [...DATA_TEMPLATES.import, ...DATA_TEMPLATES.export];
+    const tmpl = allTemplates.find(t => t.id === item.templateId);
+    const flowLabel = tmpl ? tmpl.label : (item.templateId || '–');
+    const dirChip = item.direction === 'import'
+      ? `<span class="chip chip--info" style="font-size:10px;padding:1px 6px;margin-top:3px">Nhập</span>`
+      : `<span class="chip chip--neutral" style="font-size:10px;padding:1px 6px;margin-top:3px">Xuất</span>`;
     return `
       <tr style="animation-delay:${idx * 50}ms">
-        <td class="bold">${item.id}</td>
+        <td class="bold" style="white-space:nowrap">${item.id}</td>
         <td class="muted">${item.client}</td>
-        <td class="muted">${item.flow}</td>
-        <td class="muted">${item.route}</td>
+        <td>
+          <div style="display:flex;flex-direction:column;gap:3px">
+            <span style="font-size:13px;font-weight:500">${flowLabel}</span>
+            ${dirChip}
+          </div>
+        </td>
+        <td class="muted" style="font-size:12px">${item.route}</td>
         <td>${UI.chip(item.status, item.statusType, true)}</td>
-        <td class="right"><button class="btn btn--secondary btn--sm js-detail" data-id="${item.id}">Chi tiết</button></td>
+        <td>${UI.chip(item.laden === 'Empty' ? 'Rỗng' : 'Có hàng', item.laden === 'Empty' ? 'info' : 'success', false)}</td>
+        <td class="right" style="white-space:nowrap">
+          <button class="btn btn--ghost btn--sm js-detail" data-id="${item.id}" style="margin-right:4px">Chi tiết</button>
+          <button class="btn btn--secondary btn--sm js-edit-container" data-id="${item.id}" title="Sửa flow">
+            <span class="material-symbols-outlined icon-sm">edit</span>
+          </button>
+        </td>
       </tr>`;
   },
 
