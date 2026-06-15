@@ -52,6 +52,12 @@
           <span>Dữ liệu Hệ thống</span>
         </a>
       </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="analytics">
+          <span class="material-symbols-outlined" aria-hidden="true">bar_chart</span>
+          <span>Phân tích Hiệu suất</span>
+        </a>
+      </li>
     </ul>
 
     <div class="sidebar__footer">
@@ -553,6 +559,105 @@
       </main>
     </div>
 
+    <!-- ─────────────────────────────
+         VIEW: ANALYTICS
+    ───────────────────────────── -->
+    <div class="view" id="view-analytics">
+      <main class="page" aria-label="Phân tích Hiệu suất">
+
+        <div class="page-header">
+          <div class="page-header__left">
+            <h2 class="page-header__title">Phân tích Hiệu suất</h2>
+            <p class="page-header__subtitle">Theo dõi KPI vận hành, doanh thu và hiệu suất đội xe theo thời gian.</p>
+          </div>
+          <div class="tabs" style="border:none;margin:0;gap:0" id="analytics-period-tabs">
+            <button class="tab active" data-period="7d">7 Ngày</button>
+            <button class="tab" data-period="30d">30 Ngày</button>
+            <button class="tab" data-period="ytd">Năm nay</button>
+          </div>
+        </div>
+
+        <!-- KPI cards -->
+        <div class="grid-5 anim-stagger" id="analytics-kpis" style="margin-bottom:var(--space-24)"></div>
+
+        <!-- Line chart + Donut chart -->
+        <div class="grid-8-4" style="margin-bottom:var(--space-24)">
+
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="card__header">
+              <h2 class="card__title">Container / Ngày</h2>
+              <div style="display:flex;gap:var(--space-16);align-items:center">
+                <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-on-surface-variant)">
+                  <span style="width:20px;height:2.5px;background:var(--color-primary);display:inline-block;border-radius:2px"></span>
+                  Tổng số
+                </span>
+                <span style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--color-on-surface-variant)">
+                  <span style="width:20px;height:2px;background:var(--color-success);display:inline-block;border-radius:2px;border-top:2px dashed var(--color-success)"></span>
+                  Đúng giờ
+                </span>
+              </div>
+            </div>
+            <div style="padding:var(--space-8) var(--space-16) var(--space-16)">
+              <div id="line-chart-container" style="height:220px;width:100%"></div>
+            </div>
+          </div>
+
+          <div class="card">
+            <h2 class="card__title card__title--sep">Chi phí theo Hub</h2>
+            <div style="display:flex;justify-content:center;margin:var(--space-16) 0" id="donut-chart-container"></div>
+            <div id="donut-legend" class="stack stack--8"></div>
+          </div>
+
+        </div>
+
+        <!-- Bar chart + Vehicle ranking -->
+        <div class="grid-2">
+
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="card__header">
+              <h2 class="card__title">Doanh thu &amp; Chi phí (Triệu VNĐ)</h2>
+              <div style="display:flex;gap:var(--space-12);align-items:center">
+                <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-on-surface-variant)">
+                  <span style="width:12px;height:12px;background:var(--color-primary);border-radius:var(--radius-sm);display:inline-block"></span>
+                  Doanh thu
+                </span>
+                <span style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--color-on-surface-variant)">
+                  <span style="width:12px;height:12px;background:var(--color-outline);border-radius:var(--radius-sm);display:inline-block"></span>
+                  Chi phí
+                </span>
+              </div>
+            </div>
+            <div style="padding:var(--space-8) var(--space-16) var(--space-16)">
+              <div id="bar-chart-container" style="height:200px"></div>
+            </div>
+          </div>
+
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="card__header">
+              <h2 class="card__title">Xếp hạng Hiệu suất Xe</h2>
+            </div>
+            <div class="table-wrap">
+              <table class="table" aria-label="Xếp hạng hiệu suất xe">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Biển số</th>
+                    <th>Tài xế</th>
+                    <th>Chuyến</th>
+                    <th>Đúng giờ</th>
+                    <th>Sử dụng</th>
+                  </tr>
+                </thead>
+                <tbody id="vehicle-ranking-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+
+      </main>
+    </div>
+
   </div><!-- /main -->
 </div><!-- /app -->
 
@@ -1008,6 +1113,7 @@
   </div>
 </div>
 
+<script src="scripts/data/analytics.js" defer></script>
 <script src="scripts/data/dashboard.js" defer></script>
 <script src="scripts/data/containers.js" defer></script>
 <script src="scripts/data/resources.js" defer></script>

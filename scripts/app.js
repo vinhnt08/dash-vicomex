@@ -30,6 +30,7 @@ const App = (() => {
     if (view === 'resources') renderResources();
     if (view === 'costs')     renderCosts();
     if (view === 'data')      renderSystemData();
+    if (view === 'analytics') renderAnalytics();
   }
 
   const NAV_TITLES = {
@@ -38,6 +39,7 @@ const App = (() => {
     resources: 'Điều phối Nghiệp vụ & Nguồn lực',
     data:      'Quản trị Dữ liệu Hệ thống',
     costs:     'Quản lý Nguồn lực & Chi phí',
+    analytics: 'Phân tích Hiệu suất',
   };
 
   /* ── Dashboard ── */
@@ -178,6 +180,156 @@ const App = (() => {
     $('trailer-tbody').innerHTML  = UI.renderTrailerTable(systemData.trailers);
     $('hub-preview').innerHTML    = systemData.hubs.map(h => UI.hubCard(h)).join('');
     $('client-list').innerHTML    = systemData.clients.map(c => UI.clientRow(c)).join('');
+  }
+
+  /* ── Analytics ── */
+  function renderAnalytics() {
+    const d = ANALYTICS_DATA;
+
+    $('analytics-kpis').innerHTML = d.kpis.map((kpi, i) => {
+      const up = kpi.trend > 0;
+      const trendCls = kpi.trendGood ? 'kpi-card__trend--good' : 'kpi-card__trend--bad';
+      const icon = up ? 'trending_up' : 'trending_down';
+      const sign = up ? '+' : '';
+      return `
+        <div class="kpi-card" style="animation-delay:${i * 60}ms">
+          <div class="kpi-card__top">
+            <p class="kpi-card__label">${kpi.label}</p>
+            <span class="kpi-card__trend ${trendCls}">
+              <span class="material-symbols-outlined">${icon}</span>${sign}${Math.abs(kpi.trend)}%
+            </span>
+          </div>
+          <div class="kpi-card__value">${kpi.value}<span class="kpi-card__unit">${kpi.unit}</span></div>
+          <div class="kpi-card__bar"><div class="kpi-card__fill" style="width:${kpi.barPct}%"></div></div>
+        </div>`;
+    }).join('');
+
+    $('line-chart-container').innerHTML = buildLineChart(d.daily);
+    $('donut-chart-container').innerHTML = buildDonut(d.hubBreakdown);
+    $('donut-legend').innerHTML = d.hubBreakdown.map((seg, i) => {
+      const colors = ['var(--color-info)', 'var(--color-success)', 'var(--color-warning)'];
+      return `
+        <div style="display:flex;align-items:center;gap:var(--space-8);font-size:13px">
+          <span style="width:12px;height:12px;border-radius:var(--radius-sm);background:${colors[i]};flex-shrink:0"></span>
+          <span style="color:var(--color-on-surface-variant);flex:1">${seg.label}</span>
+          <span style="font-weight:600;color:var(--color-on-surface)">${seg.pct}%</span>
+          <span style="color:var(--color-on-surface-variant);font-size:11px;min-width:72px;text-align:right">${seg.amount}</span>
+        </div>`;
+    }).join('');
+
+    $('bar-chart-container').innerHTML = buildBarChart(d.monthly);
+
+    $('vehicle-ranking-tbody').innerHTML = d.vehicleRanking.map((v, i) => `
+      <tr style="animation-delay:${i * 60}ms">
+        <td>${rankBadge(v.rank)}</td>
+        <td class="bold">${v.plate}</td>
+        <td class="muted">${v.driver}</td>
+        <td>${v.trips}</td>
+        <td>
+          <div style="display:flex;align-items:center;gap:var(--space-8)">
+            <div style="width:52px;height:4px;background:var(--color-surface-container-high);border-radius:var(--radius-full);overflow:hidden">
+              <div style="width:${v.onTime}%;height:100%;background:var(--color-success);border-radius:var(--radius-full)"></div>
+            </div>
+            <span style="font-size:12px;font-weight:600;color:${v.onTime >= 90 ? 'var(--color-success)' : 'var(--color-on-surface-variant)'}">${v.onTime}%</span>
+          </div>
+        </td>
+        <td>
+          <div style="display:flex;align-items:center;gap:var(--space-8)">
+            <div style="width:52px;height:4px;background:var(--color-surface-container-high);border-radius:var(--radius-full);overflow:hidden">
+              <div style="width:${v.util}%;height:100%;background:var(--color-info);border-radius:var(--radius-full)"></div>
+            </div>
+            <span style="font-size:12px;font-weight:500">${v.util}%</span>
+          </div>
+        </td>
+      </tr>`).join('');
+  }
+
+  function rankBadge(rank) {
+    if (rank === 1) return '<span class="material-symbols-outlined icon-fill" style="color:#F59E0B;font-size:18px">workspace_premium</span>';
+    if (rank <= 3) return `<span style="font-size:12px;font-weight:700;color:var(--color-secondary)">#${rank}</span>`;
+    return `<span style="font-size:12px;color:var(--color-on-surface-variant)">${rank}</span>`;
+  }
+
+  function buildLineChart(data) {
+    const W = 700, H = 220, PL = 44, PR = 16, PT = 12, PB = 36;
+    const plotW = W - PL - PR, plotH = H - PT - PB;
+    const max = Math.ceil(Math.max(...data.map(d => d.containers)) / 10) * 10 + 10;
+    const xOf = i => PL + (i / (data.length - 1)) * plotW;
+    const yOf = v => PT + plotH * (1 - v / max);
+
+    const cPts  = data.map((d, i) => `${xOf(i).toFixed(1)},${yOf(d.containers).toFixed(1)}`).join(' ');
+    const oPts  = data.map((d, i) => `${xOf(i).toFixed(1)},${yOf(d.onTime).toFixed(1)}`).join(' ');
+    const area  = `${xOf(0).toFixed(1)},${(PT + plotH).toFixed(1)} ${cPts} ${xOf(data.length - 1).toFixed(1)},${(PT + plotH).toFixed(1)}`;
+
+    const gridVals = [0, Math.round(max * 0.25), Math.round(max * 0.5), Math.round(max * 0.75), max];
+    const grid = gridVals.map(v => {
+      const y = yOf(v).toFixed(1);
+      return `<line x1="${PL}" y1="${y}" x2="${W - PR}" y2="${y}" stroke-width="1" style="stroke:var(--color-outline-variant)"/>
+<text x="${PL - 6}" y="${(parseFloat(y) + 4).toFixed(0)}" text-anchor="end" font-size="10" style="fill:var(--color-on-surface-variant)">${v}</text>`;
+    }).join('');
+
+    const step = 2;
+    const xLabels = data
+      .filter((_, i) => i % step === 0 || i === data.length - 1)
+      .map(({ label }, _, arr) => {
+        const origI = data.findIndex(d => d.label === label);
+        return `<text x="${xOf(origI).toFixed(1)}" y="${H - PB + 16}" text-anchor="middle" font-size="10" style="fill:var(--color-on-surface-variant)">${label}</text>`;
+      }).join('');
+
+    return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+  <defs>
+    <linearGradient id="lc-area" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#000000" stop-opacity="0.07"/>
+      <stop offset="100%" stop-color="#000000" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  ${grid}
+  ${xLabels}
+  <polygon points="${area}" fill="url(#lc-area)"/>
+  <polyline points="${cPts}" fill="none" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round" style="stroke:var(--color-primary)"/>
+  <polyline points="${oPts}" fill="none" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" stroke-dasharray="6,3" style="stroke:var(--color-success)"/>
+</svg>`;
+  }
+
+  function buildDonut(segments) {
+    const r = 68, cx = 90, cy = 90;
+    const circ = 2 * Math.PI * r;
+    const colors = ['var(--color-info)', 'var(--color-success)', 'var(--color-warning)'];
+    let cum = 0;
+    const circles = segments.map((seg, i) => {
+      const len = (seg.pct / 100) * circ;
+      const offset = circ / 4 - (cum / 100) * circ;
+      cum += seg.pct;
+      return `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke-width="20"
+        style="stroke:${colors[i]}"
+        stroke-dasharray="${len.toFixed(2)} ${(circ - len).toFixed(2)}"
+        stroke-dashoffset="${offset.toFixed(2)}"/>`;
+    }).join('\n  ');
+    const total = segments.reduce((s, seg) => s + seg.pct, 0);
+    return `<svg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg" style="width:160px;height:160px;flex-shrink:0">
+  <circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke-width="20" style="stroke:var(--color-surface-container-high)"/>
+  ${circles}
+  <text x="${cx}" y="${cy - 8}" text-anchor="middle" font-size="22" font-weight="700" style="fill:var(--color-on-surface);font-family:'Hanken Grotesk',sans-serif">${total}%</text>
+  <text x="${cx}" y="${cy + 12}" text-anchor="middle" font-size="11" style="fill:var(--color-on-surface-variant)">Chi phí</text>
+</svg>`;
+  }
+
+  function buildBarChart(data) {
+    const maxVal = Math.max(...data.map(m => m.revenue)) * 1.08;
+    const chartH = 160;
+    const bars = data.map((m, i) => {
+      const rH = Math.round((m.revenue / maxVal) * chartH);
+      const eH = Math.round((m.expenses / maxVal) * chartH);
+      return `
+        <div class="bar-group" style="animation-delay:${i * 70}ms">
+          <div class="bar-pair">
+            <div class="bar bar--primary" style="height:${rH}px"></div>
+            <div class="bar bar--muted" style="height:${eH}px"></div>
+          </div>
+          <div class="bar-group__label">${m.label}</div>
+        </div>`;
+    }).join('');
+    return `<div class="bar-chart"><div class="bar-chart__area">${bars}</div><div class="bar-chart__baseline"></div></div>`;
   }
 
   /* ── Route Suggestions ── */
@@ -323,6 +475,12 @@ const App = (() => {
       }
       if (e.target.classList.contains('overlay'))
         e.target.classList.remove('open');
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('[data-period]');
+      if (!btn) return;
+      $$('#analytics-period-tabs .tab').forEach(t => t.classList.toggle('active', t === btn));
     });
 
     document.addEventListener('keydown', e => {

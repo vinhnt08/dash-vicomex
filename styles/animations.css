@@ -131,3 +131,29 @@
 
 /* ── Topbar load ── */
 .topbar { animation: fade-in 0.3s ease both; }
+
+/* ── Analytics bar chart ── */
+@keyframes bar-rise {
+  to { transform: scaleY(1); }
+}
+@keyframes bar-group-enter {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.bar-group:nth-child(1) .bar { animation-delay: 0ms; }
+.bar-group:nth-child(2) .bar { animation-delay: 70ms; }
+.bar-group:nth-child(3) .bar { animation-delay: 140ms; }
+.bar-group:nth-child(4) .bar { animation-delay: 210ms; }
+.bar-group:nth-child(5) .bar { animation-delay: 280ms; }
+.bar-group:nth-child(6) .bar { animation-delay: 350ms; }
+
+/* ── Analytics nav item (7th) ── */
+.nav-item:nth-child(6) { animation-delay: 200ms; }
+
+/* ── KPI card fill transition on enter ── */
+.kpi-card__fill {
+  animation: kpi-fill 1.2s cubic-bezier(0.16, 1, 0.3, 1) both 0.3s;
+}
+@keyframes kpi-fill {
+  from { width: 0 !important; }
+}

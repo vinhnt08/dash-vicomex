@@ -271,6 +271,7 @@
 }
 
 /* ── Grid ── */
+.grid-5 { display: grid; grid-template-columns: repeat(5, 1fr); gap: var(--gutter); width: 100%; box-sizing: border-box; }
 .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--gutter); width: 100%; box-sizing: border-box; }
 .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--gutter); width: 100%; box-sizing: border-box; }
 .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--gutter); width: 100%; box-sizing: border-box; }
@@ -407,6 +408,7 @@
   .page { padding: var(--space-24); }
 
   /* grids */
+  .grid-5   { grid-template-columns: repeat(3, 1fr); }
   .grid-4   { grid-template-columns: repeat(2, 1fr); }
   .grid-3   { grid-template-columns: repeat(2, 1fr); }
   .grid-8-4 { grid-template-columns: 1fr; }
@@ -468,6 +470,7 @@
   .page { padding: var(--space-16); }
 
   /* grids - reduce gap on mobile */
+  .grid-5     { grid-template-columns: repeat(2, 1fr); gap: var(--space-12); }
   .grid-4     { grid-template-columns: 1fr; gap: var(--space-12); }
   .grid-3, .grid-2 { grid-template-columns: 1fr; gap: var(--space-12); }
   .grid-8-4   { grid-template-columns: 1fr; gap: var(--space-12); }

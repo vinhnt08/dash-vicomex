@@ -1427,3 +1427,129 @@
   color: var(--color-on-surface-variant);
   margin-top: 1px;
 }
+
+/* ════════════════════════════════════════
+   ANALYTICS: KPI CARDS
+════════════════════════════════════════ */
+.kpi-card {
+  background: var(--color-surface-container-lowest);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius-lg);
+  padding: var(--space-16);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  animation: fade-in 0.35s ease both;
+}
+.kpi-card__top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-8);
+}
+.kpi-card__label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--color-on-surface-variant);
+  line-height: 1.4;
+}
+.kpi-card__trend {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 6px;
+  border-radius: var(--radius-full);
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.kpi-card__trend .material-symbols-outlined { font-size: 14px; }
+.kpi-card__trend--good {
+  background: var(--color-success-bg);
+  color: var(--color-success-text);
+}
+.kpi-card__trend--bad {
+  background: var(--color-error-container);
+  color: var(--color-on-error-container);
+}
+.kpi-card__value {
+  font-family: 'Hanken Grotesk', sans-serif;
+  font-size: 34px;
+  font-weight: 700;
+  line-height: 1;
+  color: var(--color-on-surface);
+  letter-spacing: -0.02em;
+}
+.kpi-card__unit {
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  margin-left: 3px;
+}
+.kpi-card__bar {
+  height: 4px;
+  background: var(--color-surface-container-high);
+  border-radius: var(--radius-full);
+  overflow: hidden;
+}
+.kpi-card__fill {
+  height: 100%;
+  background: var(--color-primary);
+  border-radius: var(--radius-full);
+  transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ════════════════════════════════════════
+   ANALYTICS: BAR CHART
+════════════════════════════════════════ */
+.bar-chart {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.bar-chart__area {
+  flex: 1;
+  display: flex;
+  align-items: flex-end;
+  gap: var(--space-16);
+  padding-bottom: 0;
+}
+.bar-group {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--space-8);
+  animation: bar-group-enter 0.5s ease both;
+}
+.bar-pair {
+  display: flex;
+  align-items: flex-end;
+  gap: 3px;
+  width: 100%;
+}
+.bar {
+  flex: 1;
+  min-width: 10px;
+  border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+  transform: scaleY(0);
+  transform-origin: bottom;
+  animation: bar-rise 0.55s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.bar--primary { background: var(--color-primary); }
+.bar--muted   { background: var(--color-outline); }
+.bar-group__label {
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  white-space: nowrap;
+}
+.bar-chart__baseline {
+  height: 1px;
+  background: var(--color-outline-variant);
+  margin-top: 0;
+}
