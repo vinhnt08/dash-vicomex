@@ -358,7 +358,8 @@
 .chip--warning { background: var(--color-warning-bg); color: var(--color-warning-text); border-color: var(--color-warning-border); }
 .chip--info    { background: var(--color-info-bg);    color: var(--color-info-text);    border-color: var(--color-info-border); }
 .chip--error   { background: var(--color-error-container); color: var(--color-on-error-container); border-color: #fca5a5; }
-.chip--neutral { background: var(--color-surface-container-low); color: var(--color-on-surface-variant); border-color: var(--color-outline-variant); }
+.chip--neutral  { background: var(--color-surface-container-low); color: var(--color-on-surface-variant); border-color: var(--color-outline-variant); }
+.chip--default  { background: var(--color-surface-container); color: var(--color-on-surface-variant); border-color: var(--color-outline-variant); }
 .chip--primary { background: var(--color-primary-fixed); color: var(--color-on-primary-fixed); border-color: var(--color-primary-fixed-dim); }
 .chip--secondary { background: var(--color-secondary-container); color: var(--color-on-secondary-container); border-color: var(--color-secondary-fixed-dim); }
 
@@ -1642,4 +1643,185 @@
   height: 1px;
   background: var(--color-outline-variant);
   margin-top: 0;
+}
+
+/* ════════════════════════════════════════
+   HUB OPERATIONS CONSOLE
+════════════════════════════════════════ */
+.hub-selector {
+  display: flex;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+}
+.hub-tab {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-8);
+  height: 40px;
+  padding: 0 var(--space-16);
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius);
+  background: var(--color-surface);
+  font-family: 'Inter', sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  cursor: pointer;
+  transition: background-color 0.1s, border-color 0.1s, color 0.1s;
+}
+.hub-tab .material-symbols-outlined { font-size: 18px; }
+.hub-tab:hover {
+  background: var(--color-surface-container);
+  border-color: var(--color-outline);
+  color: var(--color-on-surface);
+}
+.hub-tab.active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.hub-tab:focus-visible {
+  outline: 2px solid var(--color-primary);
+  outline-offset: 2px;
+}
+
+.alert-bar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.alert-bar__item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  padding: var(--space-8) var(--space-16);
+  border-radius: var(--radius);
+  font-size: 13px;
+}
+.alert-bar__item .material-symbols-outlined { font-size: 18px; }
+.alert-bar__item--warning {
+  background: #fff8e1;
+  color: #856404;
+  border: 1px solid #ffe082;
+}
+.alert-bar__item--info {
+  background: #e3f2fd;
+  color: #0d47a1;
+  border: 1px solid #90caf9;
+}
+
+.hub-stat-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-4);
+  padding: var(--space-24) var(--space-16);
+}
+.hub-gauge {
+  width: 96px;
+  height: 56px;
+  display: block;
+  margin-bottom: var(--space-4);
+}
+.hub-stat-card__label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--color-on-surface-variant);
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+.hub-stat-card__value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  margin: 0;
+}
+.hub-stat-card__big {
+  font-size: 36px;
+  font-weight: 700;
+  color: var(--color-on-surface);
+  line-height: 1;
+  margin: 0;
+}
+.hub-stat-card__sub {
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+  margin: 0;
+}
+.hub-stat-card__sub--warn { color: var(--color-error); }
+
+.hub-ops-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+}
+.hub-ops-group__label {
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--color-on-surface-variant);
+  padding: var(--space-4) 0 var(--space-4);
+  border-bottom: 1px solid var(--color-outline-variant);
+  margin: 0;
+}
+.hub-ops-item {
+  border: 1px solid var(--color-outline-variant);
+  border-radius: var(--radius);
+  padding: var(--space-8) var(--space-12);
+  background: var(--color-surface);
+  transition: background-color 0.1s;
+}
+.hub-ops-item--in-progress {
+  border-left: 3px solid var(--color-primary);
+}
+.hub-ops-item--pending {
+  border-left: 3px solid var(--color-outline);
+}
+.hub-ops-item--done {
+  opacity: 0.6;
+}
+.hub-ops-item__top {
+  display: flex;
+  align-items: center;
+  gap: var(--space-8);
+  margin-bottom: var(--space-4);
+  flex-wrap: wrap;
+}
+.hub-ops-item__id {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--color-on-surface-variant);
+  font-family: 'Inter', monospace;
+}
+.hub-ops-item__type {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  flex: 1;
+}
+.hub-ops-item__meta {
+  display: flex;
+  gap: var(--space-12);
+  flex-wrap: wrap;
+  font-size: 12px;
+  color: var(--color-on-surface-variant);
+}
+.hub-ops-item__meta span {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+}
+
+.cont-id {
+  font-family: 'Inter', monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--color-on-surface);
+  background: var(--color-surface-container);
+  border: 1px solid var(--color-outline-variant);
+  padding: 2px 6px;
+  border-radius: var(--radius);
 }

@@ -4,5 +4,6 @@ const DATA = {
   ...DATA_RESOURCES,
   ...DATA_ROUTES,
   ...DATA_DRIVERS,
+  ...DATA_HUBS_OPS,
   templates: DATA_TEMPLATES,
 };

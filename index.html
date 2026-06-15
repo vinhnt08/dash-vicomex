@@ -64,6 +64,12 @@
           <span>Quản lý Tài xế</span>
         </a>
       </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="hub-ops">
+          <span class="material-symbols-outlined" aria-hidden="true">warehouse</span>
+          <span>Hub Operations</span>
+        </a>
+      </li>
     </ul>
 
     <div class="sidebar__footer">
@@ -560,6 +566,87 @@
           <div class="card" style="padding:0;overflow:hidden">
             <div id="client-list"></div>
           </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- ─────────────────────────────
+         VIEW: HUB OPERATIONS
+    ───────────────────────────── -->
+    <div class="view" id="view-hub-ops">
+      <main class="page page--surface" aria-label="Hub Operations Console">
+
+        <div class="page-header">
+          <div class="page-header__left">
+            <h2 class="page-header__title">Hub Operations Console</h2>
+            <p class="page-header__subtitle">Giám sát công suất, lịch hàng đến/đi và lệnh nghiệp vụ theo từng Hub.</p>
+          </div>
+          <button class="btn btn--primary" data-modal="modal-new-order">
+            <span class="material-symbols-outlined">add</span>
+            Tạo Lệnh Nghiệp vụ
+          </button>
+        </div>
+
+        <!-- Hub selector -->
+        <div class="hub-selector" id="hub-selector" role="tablist" style="margin-bottom:var(--space-24)">
+          <button class="hub-tab active" data-hub="kcn-lon" role="tab" aria-selected="true">
+            <span class="material-symbols-outlined">warehouse</span>
+            Hub KCN Lớn
+          </button>
+          <button class="hub-tab" data-hub="kcn-2" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined">warehouse</span>
+            Hub KCN 2
+          </button>
+          <button class="hub-tab" data-hub="kcn-3" role="tab" aria-selected="false">
+            <span class="material-symbols-outlined">warehouse</span>
+            Hub KCN 3
+          </button>
+        </div>
+
+        <!-- Alert bar -->
+        <div id="hub-alert-bar" style="margin-bottom:var(--space-24)" aria-live="polite"></div>
+
+        <!-- Stat cards row -->
+        <div class="grid-4 anim-stagger" id="hub-stat-cards" style="margin-bottom:var(--space-24)"></div>
+
+        <!-- Main grid: queue tables | ops list -->
+        <div class="grid-8-4">
+
+          <!-- Left: incoming / outgoing queue -->
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="card__header" style="flex-wrap:wrap;gap:var(--space-8)">
+              <h2 class="card__title">Hàng chờ tại Hub</h2>
+              <div class="tabs" style="border:none;margin:0;gap:0" id="hub-queue-tabs">
+                <button class="tab active" data-queue-tab="incoming">
+                  <span class="material-symbols-outlined icon-sm">arrow_downward</span>
+                  Đang đến
+                  <span class="chip chip--info" id="incoming-badge" style="font-size:10px;padding:1px 6px;margin-left:2px"></span>
+                </button>
+                <button class="tab" data-queue-tab="outgoing">
+                  <span class="material-symbols-outlined icon-sm">arrow_upward</span>
+                  Sẵn sàng xuất
+                  <span class="chip chip--success" id="outgoing-badge" style="font-size:10px;padding:1px 6px;margin-left:2px"></span>
+                </button>
+              </div>
+            </div>
+            <div class="table-wrap">
+              <table class="table" id="hub-queue-table" aria-label="Hàng chờ tại Hub">
+                <thead id="hub-queue-thead"></thead>
+                <tbody id="hub-queue-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Right: operations list -->
+          <div class="card" style="padding:0;overflow:hidden">
+            <div class="card__header">
+              <h2 class="card__title">Lệnh Nghiệp vụ</h2>
+              <div style="display:flex;gap:var(--space-4)" id="hub-ops-summary"></div>
+            </div>
+            <div id="hub-ops-list" style="padding:var(--space-16);display:flex;flex-direction:column;gap:var(--space-8)"></div>
+          </div>
+
         </div>
 
       </main>
@@ -1298,6 +1385,7 @@
 
 <script src="scripts/data/analytics.js" defer></script>
 <script src="scripts/data/drivers.js" defer></script>
+<script src="scripts/data/hubs.js" defer></script>
 <script src="scripts/data/dashboard.js" defer></script>
 <script src="scripts/data/containers.js" defer></script>
 <script src="scripts/data/resources.js" defer></script>

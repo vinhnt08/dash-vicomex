@@ -32,6 +32,7 @@ const App = (() => {
     if (view === 'data')      renderSystemData();
     if (view === 'analytics') renderAnalytics();
     if (view === 'drivers')   renderDriverManagement();
+    if (view === 'hub-ops')   renderHubOps();
   }
 
   const NAV_TITLES = {
@@ -42,6 +43,7 @@ const App = (() => {
     costs:     'Quản lý Nguồn lực & Chi phí',
     analytics: 'Phân tích Hiệu suất',
     drivers:   'Quản lý Tài xế',
+    'hub-ops': 'Hub Operations Console',
   };
 
   /* ── Dashboard ── */
@@ -518,6 +520,177 @@ const App = (() => {
   const sidebar        = document.querySelector('.sidebar');
   const sidebarOverlay = $('sidebar-overlay');
 
+  /* ── Hub Operations Console ── */
+  let currentHub = 'kcn-lon';
+  let currentQueue = 'incoming';
+
+  function renderHubOps() {
+    switchHub(currentHub);
+  }
+
+  function switchHub(hubKey) {
+    currentHub = hubKey;
+    const hub = DATA.hubOps[hubKey];
+    if (!hub) return;
+
+    $$('.hub-tab').forEach(btn => {
+      const sel = btn.dataset.hub === hubKey;
+      btn.classList.toggle('active', sel);
+      btn.setAttribute('aria-selected', sel ? 'true' : 'false');
+    });
+
+    renderHubAlerts(hub);
+    renderHubStatCards(hub);
+    renderHubQueue(hub, currentQueue);
+    renderHubOpsList(hub);
+  }
+
+  function renderHubAlerts(hub) {
+    const bar = $('hub-alert-bar');
+    if (!bar) return;
+    if (!hub.alerts.length) { bar.innerHTML = ''; return; }
+    bar.innerHTML = `<div class="alert-bar">${hub.alerts.map(a => `
+      <div class="alert-bar__item alert-bar__item--${a.type}">
+        <span class="material-symbols-outlined">${a.icon}</span>
+        <span>${a.text}</span>
+      </div>`).join('')}</div>`;
+  }
+
+  function renderHubStatCards(hub) {
+    const container = $('hub-stat-cards');
+    if (!container) return;
+    const { current, max, unit } = hub.capacity;
+    const pct = Math.round((current / max) * 100);
+    const inProgress = hub.operations.filter(o => o.status === 'in-progress').length;
+    const pending    = hub.operations.filter(o => o.status === 'pending').length;
+    const delayed    = hub.incoming.filter(c => c.status === 'delayed').length;
+
+    container.innerHTML = `
+      <div class="card hub-stat-card">
+        ${buildCapacityGauge(pct)}
+        <p class="hub-stat-card__label">Công suất</p>
+        <p class="hub-stat-card__value">${current}/${max} ${unit}</p>
+      </div>
+      <div class="card hub-stat-card">
+        <p class="hub-stat-card__big">${inProgress}</p>
+        <p class="hub-stat-card__label">Lệnh đang thực hiện</p>
+        <p class="hub-stat-card__sub">${pending} lệnh chờ</p>
+      </div>
+      <div class="card hub-stat-card">
+        <p class="hub-stat-card__big">${hub.incoming.length}</p>
+        <p class="hub-stat-card__label">Cont đang đến</p>
+        ${delayed ? `<p class="hub-stat-card__sub hub-stat-card__sub--warn">${delayed} bị trễ</p>` : '<p class="hub-stat-card__sub">Đúng lịch</p>'}
+      </div>
+      <div class="card hub-stat-card">
+        <p class="hub-stat-card__big">${hub.outgoing.length}</p>
+        <p class="hub-stat-card__label">Cont sẵn sàng xuất</p>
+        <p class="hub-stat-card__sub">${hub.equipment.filter(e => e.status === 'available').length} xe sẵn sàng</p>
+      </div>`;
+  }
+
+  function buildCapacityGauge(pct) {
+    const r = 36;
+    const cx = 48, cy = 48;
+    const full   = Math.PI * r;
+    const filled = (pct / 100) * full;
+    const color  = pct >= 80 ? 'var(--color-error)' : pct >= 60 ? 'var(--color-warning)' : 'var(--color-success)';
+    return `<svg class="hub-gauge" viewBox="0 0 96 56" aria-hidden="true">
+      <path d="M 12 48 A 36 36 0 0 1 84 48" fill="none" stroke="var(--color-outline-variant)" stroke-width="8" stroke-linecap="round"/>
+      <path d="M 12 48 A 36 36 0 0 1 84 48" fill="none"
+        stroke="${color}" stroke-width="8" stroke-linecap="round"
+        stroke-dasharray="${filled} ${full}"
+        style="transform-origin:${cx}px ${cy}px"/>
+      <text x="${cx}" y="44" text-anchor="middle" style="font-size:14px;font-weight:700;fill:var(--color-on-surface)">${pct}%</text>
+    </svg>`;
+  }
+
+  function renderHubQueue(hub, queueType) {
+    currentQueue = queueType;
+    const incomingBadge = $('incoming-badge');
+    const outgoingBadge = $('outgoing-badge');
+    if (incomingBadge) incomingBadge.textContent = hub.incoming.length;
+    if (outgoingBadge) outgoingBadge.textContent = hub.outgoing.length;
+
+    $$('[data-queue-tab]').forEach(btn => {
+      btn.classList.toggle('active', btn.dataset.queueTab === queueType);
+    });
+
+    const thead = $('hub-queue-thead');
+    const tbody = $('hub-queue-tbody');
+    if (!thead || !tbody) return;
+
+    if (queueType === 'incoming') {
+      thead.innerHTML = `<tr>
+        <th>Cont ID</th><th>Khách hàng</th><th>Luồng</th>
+        <th>Kích thước</th><th>ETA</th><th>Trạng thái</th>
+      </tr>`;
+      tbody.innerHTML = hub.incoming.map(c => `<tr>
+        <td><span class="cont-id">${c.contId}</span></td>
+        <td>${c.client}</td>
+        <td>${c.flow}</td>
+        <td>${c.size}</td>
+        <td>${c.eta}</td>
+        <td>${c.status === 'delayed'
+          ? '<span class="chip chip--warning">Trễ</span>'
+          : '<span class="chip chip--info">Đang đến</span>'}</td>
+      </tr>`).join('');
+    } else {
+      thead.innerHTML = `<tr>
+        <th>Cont ID</th><th>Khách hàng</th><th>Luồng</th>
+        <th>Kích thước</th><th>Sẵn sàng lúc</th><th>Điểm đến</th>
+      </tr>`;
+      tbody.innerHTML = hub.outgoing.map(c => `<tr>
+        <td><span class="cont-id">${c.contId}</span></td>
+        <td>${c.client}</td>
+        <td>${c.flow}</td>
+        <td>${c.size}</td>
+        <td>${c.readyAt}</td>
+        <td>${c.dest}</td>
+      </tr>`).join('');
+    }
+  }
+
+  function renderHubOpsList(hub) {
+    const list    = $('hub-ops-list');
+    const summary = $('hub-ops-summary');
+    if (!list) return;
+
+    const groups = [
+      { key: 'in-progress', label: 'Đang thực hiện', chipClass: 'chip--info' },
+      { key: 'pending',     label: 'Chờ thực hiện',  chipClass: 'chip--default' },
+      { key: 'done',        label: 'Hoàn thành',      chipClass: 'chip--success' },
+    ];
+
+    if (summary) {
+      summary.innerHTML = groups.map(g => {
+        const n = hub.operations.filter(o => o.status === g.key).length;
+        const shortLabel = g.key === 'in-progress' ? 'Đang làm' : g.key === 'pending' ? 'Chờ' : 'Xong';
+        return `<span class="chip ${g.chipClass}" style="font-size:10px;padding:2px 6px">${shortLabel} ${n}</span>`;
+      }).join('');
+    }
+
+    list.innerHTML = groups.map(g => {
+      const ops = hub.operations.filter(o => o.status === g.key);
+      if (!ops.length) return '';
+      return `<div class="hub-ops-group">
+        <p class="hub-ops-group__label">${g.label}</p>
+        ${ops.map(op => `
+          <div class="hub-ops-item hub-ops-item--${op.status}">
+            <div class="hub-ops-item__top">
+              <span class="hub-ops-item__id">${op.id}</span>
+              <span class="hub-ops-item__type">${op.type}</span>
+            </div>
+            <div class="hub-ops-item__meta">
+              <span>${op.contId}</span>
+              <span>${op.client}</span>
+              ${op.assignedTo ? `<span><span class="material-symbols-outlined" style="font-size:13px;vertical-align:middle">forklift</span> ${op.assignedTo}</span>` : ''}
+              ${op.startTime  ? `<span>${op.startTime}</span>` : ''}
+            </div>
+          </div>`).join('')}
+      </div>`;
+    }).join('');
+  }
+
   function openSidebar() {
     sidebar.classList.add('open');
     sidebarOverlay.classList.add('open');
@@ -676,6 +849,19 @@ const App = (() => {
       const view = tab.dataset.sysTab;
       $$('[data-sys-tab]').forEach(t => t.classList.toggle('active', t.dataset.sysTab === view));
       $$('[data-sys-panel]').forEach(p => p.hidden = p.dataset.sysPanel !== view);
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('[data-hub]');
+      if (!btn || !btn.classList.contains('hub-tab')) return;
+      switchHub(btn.dataset.hub);
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('[data-queue-tab]');
+      if (!btn) return;
+      const hub = DATA.hubOps[currentHub];
+      if (hub) renderHubQueue(hub, btn.dataset.queueTab);
     });
   }
 
