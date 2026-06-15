@@ -1,7 +1,7 @@
 const DATA_TEMPLATES = {
   import: [
     {
-      id: 'imp-1', label: 'Flow 1 – Lưu Hub',
+      id: 'imp-1', label: 'Phương án 1 – Lưu Hub',
       desc: 'Khi kho KH không đủ sức chứa',
       nodes: [
         { key: 'truck',    type: 'truck',    label: 'Đầu kéo', icon: 'local_shipping',  x: 30,  y: 110 },
@@ -16,7 +16,7 @@ const DATA_TEMPLATES = {
       ],
     },
     {
-      id: 'imp-2', label: 'Flow 2 – Giao Thẳng',
+      id: 'imp-2', label: 'Phương án 2 – Giao Thẳng',
       desc: 'KH yêu cầu GẤP hoặc kho đủ sức chứa',
       nodes: [
         { key: 'truck',    type: 'truck',    label: 'Đầu kéo', icon: 'local_shipping',  x: 30,  y: 110 },
@@ -29,7 +29,7 @@ const DATA_TEMPLATES = {
       ],
     },
     {
-      id: 'imp-3', label: 'Flow 3 – Ghép 2 Cont 20',
+      id: 'imp-3', label: 'Phương án 3 – Ghép 2 Cont 20',
       desc: 'Tận dụng xe chở 2 cont 20, giao 2 KH cùng lộ trình',
       nodes: [
         { key: 'truck',     type: 'truck',    label: 'Đầu kéo',  icon: 'local_shipping',  x: 20,  y: 120 },
@@ -48,7 +48,7 @@ const DATA_TEMPLATES = {
       ],
     },
     {
-      id: 'imp-4', label: 'Flow 4 – Reuse Cont Rỗng',
+      id: 'imp-4', label: 'Phương án 4 – Reuse Cont Rỗng',
       desc: 'Dùng cont rỗng sau rút hàng, chuyển đóng hàng xuất',
       nodes: [
         { key: 'truck',     type: 'truck',    label: 'Đầu kéo',  icon: 'local_shipping',  x: 20,  y: 110 },
@@ -67,7 +67,7 @@ const DATA_TEMPLATES = {
   ],
   export: [
     {
-      id: 'exp-1', label: 'Flow 1 – Tận Dụng Cont Rỗng',
+      id: 'exp-1', label: 'Phương án 1 – Tận Dụng Cont Rỗng',
       desc: 'Kết hợp chặng xuất/nhập, dùng cont rỗng và xe nhập khẩu',
       nodes: [
         { key: 'truck',     type: 'truck',    label: 'Đầu kéo',  icon: 'local_shipping',  x: 20,  y: 110 },
@@ -84,7 +84,7 @@ const DATA_TEMPLATES = {
       ],
     },
     {
-      id: 'exp-2', label: 'Flow 2 – Xuất Khẩu Thông Thường',
+      id: 'exp-2', label: 'Phương án 2 – Xuất Khẩu Thông Thường',
       desc: 'Xe từ Depot lấy cont, đến KH đóng hàng, về Cảng',
       nodes: [
         { key: 'truck',    type: 'truck',    label: 'Đầu kéo',  icon: 'local_shipping',  x: 20,  y: 110 },
@@ -101,7 +101,7 @@ const DATA_TEMPLATES = {
       ],
     },
     {
-      id: 'exp-3', label: 'Flow 3 – Kho Chưa Đủ Sức Chứa',
+      id: 'exp-3', label: 'Phương án 3 – Kho Chưa Đủ Sức Chứa',
       desc: 'Lưu tạm tại Hub trước khi KH sẵn sàng nhận hàng đóng',
       nodes: [
         { key: 'truck',    type: 'truck',    label: 'Đầu kéo',  icon: 'local_shipping',  x: 20,  y: 110 },
