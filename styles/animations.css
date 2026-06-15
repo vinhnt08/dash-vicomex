@@ -147,8 +147,9 @@
 .bar-group:nth-child(5) .bar { animation-delay: 280ms; }
 .bar-group:nth-child(6) .bar { animation-delay: 350ms; }
 
-/* ── Analytics nav item (7th) ── */
+/* ── Analytics (7th) and Drivers (8th) nav item stagger ── */
 .nav-item:nth-child(6) { animation-delay: 200ms; }
+.nav-item:nth-child(7) { animation-delay: 240ms; }
 
 /* ── KPI card fill transition on enter ── */
 .kpi-card__fill {

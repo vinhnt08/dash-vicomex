@@ -3,5 +3,6 @@ const DATA = {
   ...DATA_CONTAINERS,
   ...DATA_RESOURCES,
   ...DATA_ROUTES,
+  ...DATA_DRIVERS,
   templates: DATA_TEMPLATES,
 };

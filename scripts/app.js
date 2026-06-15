@@ -31,6 +31,7 @@ const App = (() => {
     if (view === 'costs')     renderCosts();
     if (view === 'data')      renderSystemData();
     if (view === 'analytics') renderAnalytics();
+    if (view === 'drivers')   renderDriverManagement();
   }
 
   const NAV_TITLES = {
@@ -40,6 +41,7 @@ const App = (() => {
     data:      'Quản trị Dữ liệu Hệ thống',
     costs:     'Quản lý Nguồn lực & Chi phí',
     analytics: 'Phân tích Hiệu suất',
+    drivers:   'Quản lý Tài xế',
   };
 
   /* ── Dashboard ── */
@@ -180,6 +182,162 @@ const App = (() => {
     $('trailer-tbody').innerHTML  = UI.renderTrailerTable(systemData.trailers);
     $('hub-preview').innerHTML    = systemData.hubs.map(h => UI.hubCard(h)).join('');
     $('client-list').innerHTML    = systemData.clients.map(c => UI.clientRow(c)).join('');
+  }
+
+  /* ── Driver Management ── */
+  function renderDriverManagement() {
+    renderDriverTable();
+    $('driver-search')?.addEventListener('input', renderDriverTable);
+    $('driver-filter-team')?.addEventListener('change', renderDriverTable);
+    $('driver-filter-status')?.addEventListener('change', renderDriverTable);
+  }
+
+  function renderDriverTable() {
+    const search = ($('driver-search')?.value || '').toLowerCase();
+    const team   = $('driver-filter-status') ? ($('driver-filter-team')?.value || '') : '';
+    const status = $('driver-filter-status')?.value || '';
+
+    const filtered = DATA.driverProfiles.filter(d => {
+      if (search && !d.name.toLowerCase().includes(search) && !d.plate.toLowerCase().includes(search)) return false;
+      if (team   && d.team !== team) return false;
+      if (status && d.status !== status) return false;
+      return true;
+    });
+
+    const STATUS_LABEL = { 'on-duty': 'Đang làm việc', 'off-duty': 'Nghỉ ca', 'on-leave': 'Nghỉ phép' };
+    const STATUS_TYPE  = { 'on-duty': 'success', 'off-duty': 'neutral', 'on-leave': 'warning' };
+
+    $('driver-mgmt-tbody').innerHTML = filtered.length
+      ? filtered.map((d, i) => {
+          const teamCls  = d.team === 'Đội 1' ? 'driver-avatar--team1' : 'driver-avatar--team2';
+          const barColor = d.onTimeRate >= 90 ? 'var(--color-success)' : d.onTimeRate >= 80 ? 'var(--color-warning)' : 'var(--color-error)';
+          return `
+            <tr style="animation-delay:${i * 50}ms">
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--space-12)">
+                  <div class="driver-avatar ${teamCls}" aria-hidden="true">${d.initials}</div>
+                  <div>
+                    <p style="font-weight:600;font-size:14px;color:var(--color-on-surface)">${d.name}</p>
+                    <p style="font-size:12px;color:var(--color-on-surface-variant)">${d.phone}</p>
+                  </div>
+                </div>
+              </td>
+              <td class="muted">${d.team}</td>
+              <td>${UI.chip(STATUS_LABEL[d.status], STATUS_TYPE[d.status], true)}</td>
+              <td style="font-weight:500">${d.trips} chuyến</td>
+              <td>
+                <div style="display:flex;align-items:center;gap:var(--space-8)">
+                  <div style="width:48px;height:4px;background:var(--color-surface-container-high);border-radius:var(--radius-full);overflow:hidden">
+                    <div style="width:${d.onTimeRate}%;height:100%;background:${barColor};border-radius:var(--radius-full)"></div>
+                  </div>
+                  <span style="font-size:12px;font-weight:600">${d.onTimeRate}%</span>
+                </div>
+              </td>
+              <td style="font-weight:500;font-size:13px">${d.salary}</td>
+              <td class="right">
+                <button class="btn btn--ghost btn--sm js-driver-profile" data-driver-id="${d.id}">
+                  <span class="material-symbols-outlined icon-sm">open_in_new</span>
+                  Chi tiết
+                </button>
+              </td>
+            </tr>`;
+        }).join('')
+      : `<tr><td colspan="7" style="text-align:center;color:var(--color-on-surface-variant);padding:var(--space-32)">Không tìm thấy tài xế nào</td></tr>`;
+  }
+
+  function openDriverProfile(driver) {
+    const STATUS_LABEL = { 'on-duty': 'Đang làm việc', 'off-duty': 'Nghỉ ca', 'on-leave': 'Nghỉ phép' };
+    const STATUS_TYPE  = { 'on-duty': 'success', 'off-duty': 'neutral', 'on-leave': 'warning' };
+    const teamCls = driver.team === 'Đội 1' ? 'driver-avatar--team1' : 'driver-avatar--team2';
+
+    $('profile-avatar').textContent = driver.initials;
+    $('profile-avatar').className   = `driver-avatar driver-avatar--lg ${teamCls}`;
+    $('profile-modal-title').textContent = driver.name;
+    $('profile-status').innerHTML   = UI.chip(STATUS_LABEL[driver.status], STATUS_TYPE[driver.status], true);
+    $('profile-team-label').textContent = driver.team;
+    $('profile-plate').textContent  = `· ${driver.plate}`;
+
+    $('profile-phone').textContent      = driver.phone;
+    $('profile-hire-date').textContent  = driver.hireDate;
+    $('profile-license-id').textContent = driver.licenseId;
+    $('profile-license-exp').textContent = driver.licenseExpiry;
+
+    $('profile-current-trip').innerHTML = driver.currentTrip
+      ? `<div class="alert alert--info">
+           <span class="material-symbols-outlined">local_shipping</span>
+           <div>
+             <p style="font-weight:600;font-size:13px;margin-bottom:2px">Đang chạy chuyến</p>
+             <p style="font-size:12px">${driver.currentTrip.orderId} · ${driver.currentTrip.route} · ETA ${driver.currentTrip.eta}</p>
+           </div>
+         </div>`
+      : '';
+
+    $('perf-trips').textContent = driver.trips;
+    $('perf-ontime').innerHTML  = `${driver.onTimeRate}<span class="kpi-card__unit">%</span>`;
+    $('perf-stars').innerHTML   = buildStars(driver.avgRating);
+    $('perf-rating').textContent = driver.avgRating.toFixed(1);
+    $('perf-salary').textContent = driver.salary;
+    $('perf-monthly-chart').innerHTML = buildMiniBarChart(driver.monthly);
+
+    $('perf-violations').innerHTML = driver.violations.length
+      ? driver.violations.map(v => `
+          <div class="alert alert--warning" style="margin-bottom:var(--space-8)">
+            <span class="material-symbols-outlined">warning</span>
+            <div>
+              <p style="font-weight:600;font-size:13px">${v.type} <span style="font-weight:400;color:var(--color-on-surface-variant)">· ${v.date}</span></p>
+              <p style="font-size:12px;margin-top:2px">${v.desc}</p>
+            </div>
+          </div>`).join('')
+      : `<div style="display:flex;align-items:center;gap:var(--space-8);padding:var(--space-12);background:var(--color-success-bg);border-radius:var(--radius-lg)">
+           <span class="material-symbols-outlined icon-fill" style="color:var(--color-success)">verified</span>
+           <span style="font-size:13px;color:var(--color-success-text)">Không có vi phạm trong tháng</span>
+         </div>`;
+
+    $('profile-trip-tbody').innerHTML = driver.tripHistory.map((t, i) => `
+      <tr style="animation-delay:${i * 40}ms">
+        <td class="muted" style="white-space:nowrap">${t.date}/06</td>
+        <td class="bold">${t.orderId}</td>
+        <td class="muted" style="font-size:12px">${t.route}</td>
+        <td style="font-weight:500;white-space:nowrap">${t.earnings} VNĐ</td>
+        <td><span style="display:flex;gap:1px">${buildStars(t.rating)}</span></td>
+      </tr>`).join('');
+
+    $$('#modal-driver-profile .modal-tab').forEach((t, i) => {
+      t.classList.toggle('active', i === 0);
+      t.setAttribute('aria-selected', i === 0 ? 'true' : 'false');
+    });
+    $$('#modal-driver-profile [data-driver-panel]').forEach((p, i) => { p.hidden = i !== 0; });
+
+    openModal('modal-driver-profile');
+  }
+
+  function buildStars(rating) {
+    const full = Math.floor(rating);
+    const half = rating % 1 >= 0.5;
+    return Array.from({ length: 5 }, (_, i) => {
+      if (i < full) return `<span class="material-symbols-outlined star-icon">star</span>`;
+      if (i === full && half) return `<span class="material-symbols-outlined star-icon">star_half</span>`;
+      return `<span class="material-symbols-outlined star-icon star-icon--empty">star</span>`;
+    }).join('');
+  }
+
+  function buildMiniBarChart(monthly) {
+    const max = Math.max(...monthly) * 1.1;
+    const H   = 56;
+    const labels = ['T1','T2','T3','T4','T5','T6'];
+    const bars = monthly.map((v, i) => {
+      const bH = Math.round((v / max) * H);
+      const opacity = 0.35 + (i / (monthly.length - 1)) * 0.65;
+      return `
+        <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">
+          <span style="font-size:10px;font-weight:600;color:var(--color-on-surface-variant)">${v}</span>
+          <div style="flex:1;width:100%;display:flex;align-items:flex-end">
+            <div style="width:100%;height:${bH}px;background:var(--color-primary);border-radius:var(--radius-sm) var(--radius-sm) 0 0;opacity:${opacity.toFixed(2)}"></div>
+          </div>
+          <span style="font-size:10px;color:var(--color-on-surface-variant)">${labels[i]}</span>
+        </div>`;
+    }).join('');
+    return `<div style="display:flex;align-items:flex-end;gap:var(--space-8);height:${H + 32}px">${bars}</div>`;
   }
 
   /* ── Analytics ── */
@@ -481,6 +639,26 @@ const App = (() => {
       const btn = e.target.closest('[data-period]');
       if (!btn) return;
       $$('#analytics-period-tabs .tab').forEach(t => t.classList.toggle('active', t === btn));
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.js-driver-profile');
+      if (!btn) return;
+      const driver = DATA.driverProfiles.find(d => d.id === btn.dataset.driverId);
+      if (driver) openDriverProfile(driver);
+    });
+
+    document.addEventListener('click', e => {
+      const tab = e.target.closest('[data-driver-tab]');
+      if (!tab) return;
+      const panel = tab.dataset.driverTab;
+      $$('#modal-driver-profile .modal-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.driverTab === panel);
+        t.setAttribute('aria-selected', t.dataset.driverTab === panel ? 'true' : 'false');
+      });
+      $$('#modal-driver-profile [data-driver-panel]').forEach(p => {
+        p.hidden = p.dataset.driverPanel !== panel;
+      });
     });
 
     document.addEventListener('keydown', e => {
