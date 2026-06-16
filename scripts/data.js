@@ -7,5 +7,6 @@ const DATA = {
   ...DATA_HUBS_OPS,
   ...DATA_CUSTOMERS,
   ...DATA_REPORTS,
+  ...DATA_VEHICLES,
   templates: DATA_TEMPLATES,
 };

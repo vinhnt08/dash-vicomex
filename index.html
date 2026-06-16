@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Vicomex – Control Tower</title>
+  <title>Vicomex – Trung tâm Điều hành</title>
   <link rel="stylesheet" href="styles/base.css" />
   <link rel="stylesheet" href="styles/layout.css" />
   <link rel="stylesheet" href="styles/components.css" />
@@ -25,25 +25,25 @@
       <li>
         <a class="nav-item" role="button" tabindex="0" data-view="dashboard" aria-current="page">
           <span class="material-symbols-outlined" aria-hidden="true">dashboard</span>
-          <span>Dashboard</span>
+          <span>Bảng điều khiển</span>
         </a>
       </li>
       <li>
         <a class="nav-item" role="button" tabindex="0" data-view="orders">
           <span class="material-symbols-outlined" aria-hidden="true">inventory_2</span>
-          <span>Order Management</span>
+          <span>Quản lý Đơn hàng</span>
         </a>
       </li>
       <li>
         <a class="nav-item" role="button" tabindex="0" data-view="resources">
           <span class="material-symbols-outlined" aria-hidden="true">conveyor_belt</span>
-          <span>Resource Management</span>
+          <span>Điều phối Nguồn lực</span>
         </a>
       </li>
       <li>
         <a class="nav-item" role="button" tabindex="0" data-view="costs">
           <span class="material-symbols-outlined" aria-hidden="true">payments</span>
-          <span>Costs</span>
+          <span>Chi phí</span>
         </a>
       </li>
       <li>
@@ -67,7 +67,7 @@
       <li>
         <a class="nav-item" role="button" tabindex="0" data-view="hub-ops">
           <span class="material-symbols-outlined" aria-hidden="true">warehouse</span>
-          <span>Hub Operations</span>
+          <span>Vận hành Hub</span>
         </a>
       </li>
       <li>
@@ -80,6 +80,12 @@
         <a class="nav-item" role="button" tabindex="0" data-view="reports">
           <span class="material-symbols-outlined" aria-hidden="true">summarize</span>
           <span>Báo cáo</span>
+        </a>
+      </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="vehicles">
+          <span class="material-symbols-outlined" aria-hidden="true">local_shipping</span>
+          <span>Phương tiện</span>
         </a>
       </li>
     </ul>
@@ -109,7 +115,7 @@
         <button class="hamburger" id="btn-hamburger" aria-label="Mở menu" aria-expanded="false">
           <span class="material-symbols-outlined" aria-hidden="true">menu</span>
         </button>
-        <h1 class="topbar__title">Control Tower – Bảng điều khiển trung tâm</h1>
+        <h1 class="topbar__title">Bảng điều khiển trung tâm</h1>
       </div>
       <div class="topbar__actions">
         <div class="topbar__search">
@@ -130,7 +136,7 @@
          VIEW: DASHBOARD
     ───────────────────────────── -->
     <div class="view" id="view-dashboard">
-      <main class="page" aria-label="Dashboard">
+      <main class="page" aria-label="Bảng điều khiển">
 
         <!-- Stat Cards -->
         <div class="grid-4 anim-stagger" style="margin-bottom:var(--space-24)">
@@ -587,11 +593,11 @@
          VIEW: HUB OPERATIONS
     ───────────────────────────── -->
     <div class="view" id="view-hub-ops">
-      <main class="page page--surface" aria-label="Hub Operations Console">
+      <main class="page page--surface" aria-label="Vận hành Hub">
 
         <div class="page-header">
           <div class="page-header__left">
-            <h2 class="page-header__title">Hub Operations Console</h2>
+            <h2 class="page-header__title">Vận hành Hub</h2>
             <p class="page-header__subtitle">Giám sát công suất, lịch hàng đến/đi và lệnh nghiệp vụ theo từng Hub.</p>
           </div>
           <button class="btn btn--primary" data-modal="modal-new-order">
@@ -946,6 +952,166 @@
         </div>
 
       </main>
+    </div>
+
+    <!-- ─────────────────────────────
+         VIEW: VEHICLES
+    ───────────────────────────── -->
+    <div class="view" id="view-vehicles">
+      <main class="page page--surface" aria-label="Quản lý Phương tiện">
+
+        <div class="page-header">
+          <div class="page-header__left">
+            <h2 class="page-header__title">Quản lý Phương tiện</h2>
+            <p class="page-header__subtitle">Theo dõi trạng thái, tọa độ, odometer và lịch bảo dưỡng đội xe.</p>
+          </div>
+          <button class="btn btn--primary">
+            <span class="material-symbols-outlined">add</span>
+            Thêm xe
+          </button>
+        </div>
+
+        <!-- Summary stat bar -->
+        <div class="grid-4 anim-stagger" id="vehicle-stat-cards" style="margin-bottom:var(--space-24)"></div>
+
+        <!-- Filter bar -->
+        <div class="filter-bar" style="margin-bottom:var(--space-24)">
+          <div class="search-wrap">
+            <span class="material-symbols-outlined search-wrap__icon">search</span>
+            <input class="input" type="search" id="vehicle-search"
+              placeholder="Tìm theo biển số, tài xế, hub…" style="padding-left:36px">
+          </div>
+          <select class="input" id="vehicle-filter-type" style="width:160px">
+            <option value="">Tất cả loại</option>
+            <option value="Đầu kéo">Đầu kéo</option>
+            <option value="Rơ mooc">Rơ mooc</option>
+          </select>
+          <select class="input" id="vehicle-filter-status" style="width:180px">
+            <option value="">Tất cả trạng thái</option>
+            <option value="active">Đang hoạt động</option>
+            <option value="idle">Chờ việc</option>
+            <option value="maintenance">Bảo dưỡng</option>
+          </select>
+        </div>
+
+        <!-- Vehicle table -->
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="table-wrap">
+            <table class="table" id="vehicle-table" aria-label="Danh sách phương tiện">
+              <thead>
+                <tr>
+                  <th>Biển số</th>
+                  <th>Loại</th>
+                  <th>Hãng / Model</th>
+                  <th>Trạng thái</th>
+                  <th>Tài xế</th>
+                  <th>Hub</th>
+                  <th>Odometer</th>
+                  <th>Nhiên liệu</th>
+                  <th>Cập nhật</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody id="vehicle-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- Modal: Vehicle Detail -->
+    <div class="drawer-overlay" id="overlay-vehicle-detail" role="dialog" aria-modal="true" aria-labelledby="veh-modal-plate">
+      <div class="drawer">
+
+        <!-- Drawer header -->
+        <div class="drawer__header">
+          <div style="display:flex;align-items:center;gap:var(--space-12)">
+            <div class="vehicle-type-icon" id="veh-modal-icon">
+              <span class="material-symbols-outlined">local_shipping</span>
+            </div>
+            <div style="flex:1;min-width:0">
+              <div style="display:flex;align-items:center;gap:var(--space-8);flex-wrap:wrap">
+                <h2 class="drawer__title" id="veh-modal-plate"></h2>
+                <span id="veh-modal-status-chip"></span>
+              </div>
+              <p class="drawer__subtitle" id="veh-modal-model"></p>
+            </div>
+            <button class="drawer__close js-modal-close" aria-label="Đóng">
+              <span class="material-symbols-outlined">close</span>
+            </button>
+          </div>
+          <div style="display:flex;align-items:center;gap:var(--space-8);margin-top:var(--space-8)">
+            <span class="chip chip--neutral" id="veh-modal-id" style="font-family:monospace;font-size:11px"></span>
+          </div>
+          <div class="modal-tabs" role="tablist" style="margin-top:var(--space-12)">
+            <button class="modal-tab active" data-veh-tab="info"        role="tab" aria-selected="true">Thông tin</button>
+            <button class="modal-tab"        data-veh-tab="location"    role="tab" aria-selected="false">Vị trí & Data</button>
+            <button class="modal-tab"        data-veh-tab="maintenance" role="tab" aria-selected="false">Bảo dưỡng</button>
+            <button class="modal-tab"        data-veh-tab="trips"       role="tab" aria-selected="false">Lịch sử</button>
+          </div>
+        </div>
+
+        <!-- Drawer body -->
+        <div class="drawer__body">
+
+          <!-- Tab: Thông tin -->
+          <div data-veh-panel="info">
+            <div class="grid-2" style="gap:var(--space-16)">
+              <div><p class="info-field__label">Hãng sản xuất</p><p class="info-field__value" id="veh-brand"></p></div>
+              <div><p class="info-field__label">Model</p><p class="info-field__value" id="veh-model-detail"></p></div>
+              <div><p class="info-field__label">Năm sản xuất</p><p class="info-field__value" id="veh-year"></p></div>
+              <div><p class="info-field__label">Tải trọng tối đa</p><p class="info-field__value" id="veh-payload"></p></div>
+              <div><p class="info-field__label">Tài xế phụ trách</p><p class="info-field__value" id="veh-driver"></p></div>
+              <div><p class="info-field__label">Hub hiện tại</p><p class="info-field__value" id="veh-hub"></p></div>
+            </div>
+            <div style="margin-top:var(--space-24)">
+              <p class="info-field__label" style="margin-bottom:var(--space-12)">Giấy tờ & Hạn</p>
+              <div id="veh-docs" style="display:flex;flex-direction:column;gap:var(--space-8)"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Vị trí & Data -->
+          <div data-veh-panel="location" hidden>
+            <div class="grid-2" style="gap:var(--space-16);margin-bottom:var(--space-24)">
+              <div><p class="info-field__label">Vĩ độ</p><p class="info-field__value" id="veh-lat" style="font-family:monospace"></p></div>
+              <div><p class="info-field__label">Kinh độ</p><p class="info-field__value" id="veh-lng" style="font-family:monospace"></p></div>
+              <div><p class="info-field__label">Cập nhật lần cuối</p><p class="info-field__value" id="veh-last-seen"></p></div>
+              <div><p class="info-field__label">Hub hiện tại</p><p class="info-field__value" id="veh-hub-loc"></p></div>
+            </div>
+            <div class="veh-gps-mock" id="veh-gps-mock" aria-label="Bản đồ vị trí (mock)"></div>
+            <div style="margin-top:var(--space-24)">
+              <p class="info-field__label" style="margin-bottom:var(--space-12)">Trạng thái vận hành</p>
+              <div style="display:flex;flex-direction:column;gap:var(--space-16)" id="veh-ops-data"></div>
+            </div>
+          </div>
+
+          <!-- Tab: Bảo dưỡng -->
+          <div data-veh-panel="maintenance" hidden>
+            <div class="table-wrap">
+              <table class="table" aria-label="Lịch bảo dưỡng">
+                <thead>
+                  <tr><th>Ngày</th><th>Loại</th><th>Km</th><th>Chi phí</th><th>Trạng thái</th></tr>
+                </thead>
+                <tbody id="veh-maintenance-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- Tab: Lịch sử chuyến -->
+          <div data-veh-panel="trips" hidden>
+            <div class="table-wrap">
+              <table class="table" aria-label="Lịch sử chuyến">
+                <thead>
+                  <tr><th>Ngày</th><th>Tuyến đường</th><th>Cont</th><th>Km</th><th>Thời gian</th></tr>
+                </thead>
+                <tbody id="veh-trips-tbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
     </div>
 
     <!-- ─────────────────────────────
@@ -1684,6 +1850,7 @@
 <script src="scripts/data/hubs.js" defer></script>
 <script src="scripts/data/customers.js" defer></script>
 <script src="scripts/data/reports.js" defer></script>
+<script src="scripts/data/vehicles.js" defer></script>
 <script src="scripts/data/dashboard.js" defer></script>
 <script src="scripts/data/containers.js" defer></script>
 <script src="scripts/data/resources.js" defer></script>

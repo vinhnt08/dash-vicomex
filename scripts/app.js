@@ -35,19 +35,21 @@ const App = (() => {
     if (view === 'hub-ops')   renderHubOps();
     if (view === 'customers') renderCustomerManagement();
     if (view === 'reports')   renderReports();
+    if (view === 'vehicles')  renderVehicles();
   }
 
   const NAV_TITLES = {
-    dashboard: 'Control Tower – Bảng điều khiển trung tâm',
-    orders:    'Quản lý Luồng Vận Hành',
-    resources: 'Điều phối Nghiệp vụ & Nguồn lực',
-    data:      'Quản trị Dữ liệu Hệ thống',
-    costs:     'Quản lý Nguồn lực & Chi phí',
-    analytics: 'Phân tích Hiệu suất',
-    drivers:   'Quản lý Tài xế',
-    'hub-ops':   'Hub Operations Console',
+    dashboard:   'Bảng điều khiển trung tâm',
+    orders:      'Quản lý Luồng Vận Hành',
+    resources:   'Điều phối Nghiệp vụ & Nguồn lực',
+    data:        'Quản trị Dữ liệu Hệ thống',
+    costs:       'Quản lý Nguồn lực & Chi phí',
+    analytics:   'Phân tích Hiệu suất',
+    drivers:     'Quản lý Tài xế',
+    'hub-ops':   'Vận hành Hub',
     customers:   'Quản lý Khách hàng',
     reports:     'Báo cáo & Xuất dữ liệu',
+    vehicles:    'Quản lý Phương tiện',
   };
 
   /* ── Dashboard ── */
@@ -524,6 +526,211 @@ const App = (() => {
   const sidebar        = document.querySelector('.sidebar');
   const sidebarOverlay = $('sidebar-overlay');
 
+  /* ── Vehicle Management ── */
+  function renderVehicles() {
+    renderVehicleStatCards();
+    renderVehicleTable();
+    $('vehicle-search')?.addEventListener('input', renderVehicleTable);
+    $('vehicle-filter-type')?.addEventListener('change', renderVehicleTable);
+    $('vehicle-filter-status')?.addEventListener('change', renderVehicleTable);
+  }
+
+  function renderVehicleStatCards() {
+    const cards = $('vehicle-stat-cards');
+    if (!cards) return;
+    const veh = DATA.vehicles;
+    const active   = veh.filter(v => v.status === 'active').length;
+    const maint    = veh.filter(v => v.status === 'maintenance').length;
+    const idle     = veh.filter(v => v.status === 'idle').length;
+    const expiring = veh.filter(v => {
+      const days = (new Date(v.registerExp) - new Date('2026-06-16')) / 86400000;
+      return days >= 0 && days <= 30;
+    }).length;
+
+    cards.innerHTML = [
+      { label: 'Đang hoạt động', value: active,   chip: 'chip--success', icon: 'check_circle' },
+      { label: 'Đang bảo dưỡng', value: maint,    chip: 'chip--warning', icon: 'build' },
+      { label: 'Chờ việc',       value: idle,     chip: 'chip--neutral', icon: 'pause_circle' },
+      { label: 'Sắp hết hạn giấy tờ (30 ngày)', value: expiring, chip: expiring ? 'chip--error' : 'chip--success', icon: 'warning' },
+    ].map(s => `
+      <div class="card hub-stat-card">
+        <span class="material-symbols-outlined" style="font-size:32px;color:var(--color-on-surface-variant)">${s.icon}</span>
+        <p class="hub-stat-card__big">${s.value}</p>
+        <p class="hub-stat-card__label">${s.label}</p>
+      </div>`).join('');
+  }
+
+  const VEH_STATUS = {
+    active:      { label: 'Hoạt động', cls: 'chip--success' },
+    idle:        { label: 'Chờ việc',  cls: 'chip--neutral' },
+    maintenance: { label: 'Bảo dưỡng', cls: 'chip--warning' },
+  };
+
+  function renderVehicleTable() {
+    const search = ($('vehicle-search')?.value || '').toLowerCase();
+    const type   = $('vehicle-filter-type')?.value || '';
+    const status = $('vehicle-filter-status')?.value || '';
+    const tbody  = $('vehicle-tbody');
+    if (!tbody) return;
+
+    const filtered = DATA.vehicles.filter(v => {
+      const matchSearch = !search ||
+        v.plate.toLowerCase().includes(search) ||
+        (v.driverName || '').toLowerCase().includes(search) ||
+        v.hub.toLowerCase().includes(search) ||
+        v.brand.toLowerCase().includes(search);
+      const matchType   = !type   || v.type === type;
+      const matchStatus = !status || v.status === status;
+      return matchSearch && matchType && matchStatus;
+    });
+
+    if (!filtered.length) {
+      tbody.innerHTML = `<tr><td colspan="10" style="text-align:center;color:var(--color-on-surface-variant);padding:var(--space-32)">Không tìm thấy phương tiện</td></tr>`;
+      return;
+    }
+
+    tbody.innerHTML = filtered.map(v => {
+      const st   = VEH_STATUS[v.status];
+      const fuel = v.fuelPct !== null
+        ? `<div style="display:flex;align-items:center;gap:6px">
+            <div class="progress" style="height:6px;width:56px">
+              <div class="progress__bar ${v.fuelPct < 30 ? 'progress__bar--warn' : ''}" style="height:6px;width:${v.fuelPct}%"></div>
+            </div>
+            <span style="font-size:12px">${v.fuelPct}%</span>
+           </div>`
+        : '<span style="color:var(--color-on-surface-variant);font-size:12px">–</span>';
+      const odo = v.odometer !== null
+        ? `${v.odometer.toLocaleString('vi')} km`
+        : '–';
+      return `<tr>
+        <td><span class="cont-id">${v.plate}</span></td>
+        <td>${v.type}</td>
+        <td style="color:var(--color-on-surface-variant);font-size:13px">${v.brand} ${v.model}</td>
+        <td><span class="chip ${st.cls}">${st.label}</span></td>
+        <td>${v.driverName ?? '<span style="color:var(--color-on-surface-variant)">–</span>'}</td>
+        <td style="font-size:13px">${v.hub}</td>
+        <td style="font-size:13px;font-family:monospace">${odo}</td>
+        <td>${fuel}</td>
+        <td style="font-size:12px;color:var(--color-on-surface-variant)">${v.lastSeen}</td>
+        <td><button class="btn btn--ghost btn--sm js-vehicle-detail" data-veh-id="${v.id}">Chi tiết</button></td>
+      </tr>`;
+    }).join('');
+  }
+
+  function openVehicleDetail(veh) {
+    const st = VEH_STATUS[veh.status];
+    $('veh-modal-plate').textContent  = veh.plate;
+    $('veh-modal-id').textContent     = veh.id;
+    $('veh-modal-model').textContent  = `${veh.brand} ${veh.model} · ${veh.year}`;
+    $('veh-modal-status-chip').innerHTML = `<span class="chip ${st.cls}">${st.label}</span>`;
+    $('veh-modal-icon').innerHTML     = `<span class="material-symbols-outlined">${veh.type === 'Rơ mooc' ? 'rv_hookup' : 'local_shipping'}</span>`;
+
+    $('veh-brand').textContent        = veh.brand;
+    $('veh-model-detail').textContent = veh.model;
+    $('veh-year').textContent         = veh.year;
+    $('veh-payload').textContent      = veh.payload.toLocaleString('vi') + ' kg';
+    $('veh-driver').textContent       = veh.driverName ?? 'Chưa phân công';
+    $('veh-hub').textContent          = veh.hub;
+
+    const today = new Date('2026-06-16');
+    const docStatus = (exp) => {
+      const d = Math.round((new Date(exp) - today) / 86400000);
+      if (d < 0)  return { cls: 'chip--error',   label: 'Đã hết hạn' };
+      if (d <= 30) return { cls: 'chip--warning', label: `Còn ${d} ngày` };
+      return { cls: 'chip--success', label: `Còn ${d} ngày` };
+    };
+    $('veh-docs').innerHTML = [
+      { label: 'Đăng ký xe', exp: veh.registerExp },
+      { label: 'Bảo hiểm',   exp: veh.insuranceExp },
+      { label: 'Đăng kiểm',  exp: veh.inspectExp },
+    ].map(d => {
+      const s = docStatus(d.exp);
+      return `<div style="display:flex;align-items:center;justify-content:space-between;padding:var(--space-8) var(--space-12);background:var(--color-surface-container);border-radius:var(--radius)">
+        <span style="font-size:13px;font-weight:500">${d.label}</span>
+        <div style="display:flex;align-items:center;gap:var(--space-8)">
+          <span style="font-size:12px;color:var(--color-on-surface-variant)">${d.exp}</span>
+          <span class="chip ${s.cls}" style="font-size:10px;padding:1px 6px">${s.label}</span>
+        </div>
+      </div>`;
+    }).join('');
+
+    $('veh-lat').textContent      = veh.lat;
+    $('veh-lng').textContent      = veh.lng;
+    $('veh-last-seen').textContent = `Hôm nay lúc ${veh.lastSeen}`;
+    $('veh-hub-loc').textContent  = veh.hub;
+
+    $('veh-gps-mock').innerHTML = `
+      <div class="veh-gps-mock__inner">
+        <div class="veh-gps-mock__grid"></div>
+        <div class="veh-gps-mock__dot">
+          <span class="map-dot" style="background:var(--color-primary)"></span>
+        </div>
+        <div class="veh-gps-mock__label">
+          <span class="material-symbols-outlined" style="font-size:14px">location_on</span>
+          ${veh.plate} — ${veh.hub}
+        </div>
+        <p class="veh-gps-mock__coords">${veh.lat}°N, ${veh.lng}°E</p>
+        <p class="veh-gps-mock__note">Tích hợp Google Maps sẽ hiển thị tại đây</p>
+      </div>`;
+
+    const opsData = $('veh-ops-data');
+    if (opsData) {
+      if (veh.odometer !== null) {
+        opsData.innerHTML = `
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+              <span>Odometer</span><span style="font-weight:600;font-family:monospace">${veh.odometer.toLocaleString('vi')} km</span>
+            </div>
+          </div>
+          <div>
+            <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:6px">
+              <span>Nhiên liệu còn lại</span>
+              <span style="font-weight:600">${veh.fuelPct}%</span>
+            </div>
+            <div class="progress" style="height:10px">
+              <div class="progress__bar ${veh.fuelPct < 30 ? 'progress__bar--warn' : ''}" style="height:10px;width:${veh.fuelPct}%"></div>
+            </div>
+          </div>
+          <div style="display:flex;justify-content:space-between;font-size:13px">
+            <span>Mức tiêu hao nhiên liệu</span>
+            <span style="font-weight:600">${veh.fuelLitersPer100} L/100km</span>
+          </div>`;
+      } else {
+        opsData.innerHTML = `<p style="font-size:13px;color:var(--color-on-surface-variant)">Rơ mooc không có dữ liệu nhiên liệu / odometer.</p>`;
+      }
+    }
+
+    $('veh-maintenance-tbody').innerHTML = veh.maintenance.map(m => {
+      const mst = { done: { cls: 'chip--success', label: 'Xong' }, scheduled: { cls: 'chip--info', label: 'Lên lịch' }, 'in-progress': { cls: 'chip--warning', label: 'Đang làm' } };
+      const s = mst[m.status];
+      return `<tr>
+        <td>${m.date}</td>
+        <td>${m.type}${m.note ? `<br><span style="font-size:11px;color:var(--color-on-surface-variant)">${m.note}</span>` : ''}</td>
+        <td>${m.km !== null ? m.km.toLocaleString('vi') + ' km' : '–'}</td>
+        <td>${m.cost.toLocaleString('vi')} ₫</td>
+        <td><span class="chip ${s.cls}" style="font-size:10px">${s.label}</span></td>
+      </tr>`;
+    }).join('');
+
+    $('veh-trips-tbody').innerHTML = veh.tripHistory.map(t => `<tr>
+      <td>${t.date}</td>
+      <td>${t.route}</td>
+      <td><span class="cont-id">${t.contId}</span></td>
+      <td>${t.km} km</td>
+      <td>${t.duration}</td>
+    </tr>`).join('');
+
+    $$('#overlay-vehicle-detail .modal-tab').forEach(t => {
+      const sel = t.dataset.vehTab === 'info';
+      t.classList.toggle('active', sel);
+      t.setAttribute('aria-selected', sel ? 'true' : 'false');
+    });
+    $$('#overlay-vehicle-detail [data-veh-panel]').forEach(p => {
+      p.hidden = p.dataset.vehPanel !== 'info';
+    });
+    $('overlay-vehicle-detail').classList.add('open');
+  }
+
   /* ── Reports ── */
   let currentReportPeriod = 'month';
 
@@ -654,7 +861,7 @@ const App = (() => {
     if (!tbody) return;
     tbody.innerHTML = DATA.reports.byRoute.map(r => `<tr>
       <td>${r.route}</td>
-      <td><span class="chip ${r.type === 'Import' ? 'chip--info' : 'chip--success'}" style="font-size:11px">${r.type}</span></td>
+      <td><span class="chip ${r.type === 'Import' ? 'chip--info' : 'chip--success'}" style="font-size:11px">${r.type === 'Import' ? 'Nhập' : 'Xuất'}</span></td>
       <td>${r.conts}</td>
       <td>
         <div style="display:flex;align-items:center;gap:var(--space-8)">
@@ -798,10 +1005,10 @@ const App = (() => {
 
     $('cust-orders-tbody').innerHTML = cust.recentOrders.map(o => `<tr>
       <td><span class="cont-id">${o.contId}</span></td>
-      <td>${o.type}</td>
+      <td>${o.type === 'Import' ? 'Nhập' : 'Xuất'}</td>
       <td>${o.size}</td>
       <td>${o.route}</td>
-      <td>${UI.chip(o.status, o.statusType, false)}</td>
+      <td>${UI.chip({ 'on-way': 'Đang đến', ready: 'Sẵn sàng', done: 'Hoàn thành' }[o.status] ?? o.status, o.statusType, false)}</td>
       <td>${o.date}</td>
     </tr>`).join('');
 
@@ -1107,11 +1314,11 @@ const App = (() => {
     });
 
     document.addEventListener('click', e => {
-      const closeBtn = e.target.closest('.js-modal-close, .modal__close');
+      const closeBtn = e.target.closest('.js-modal-close, .modal__close, .drawer__close');
       if (closeBtn) {
-        closeBtn.closest('.overlay')?.classList.remove('open');
+        closeBtn.closest('.overlay, .drawer-overlay')?.classList.remove('open');
       }
-      if (e.target.classList.contains('overlay'))
+      if (e.target.classList.contains('overlay') || e.target.classList.contains('drawer-overlay'))
         e.target.classList.remove('open');
     });
 
@@ -1143,7 +1350,7 @@ const App = (() => {
 
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
-        $$('.overlay.open').forEach(el => el.classList.remove('open'));
+        $$('.overlay.open, .drawer-overlay.open').forEach(el => el.classList.remove('open'));
         closeSidebar();
       }
     });
@@ -1156,6 +1363,26 @@ const App = (() => {
       const view = tab.dataset.sysTab;
       $$('[data-sys-tab]').forEach(t => t.classList.toggle('active', t.dataset.sysTab === view));
       $$('[data-sys-panel]').forEach(p => p.hidden = p.dataset.sysPanel !== view);
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('.js-vehicle-detail');
+      if (!btn) return;
+      const veh = DATA.vehicles.find(v => v.id === btn.dataset.vehId);
+      if (veh) openVehicleDetail(veh);
+    });
+
+    document.addEventListener('click', e => {
+      const tab = e.target.closest('[data-veh-tab]');
+      if (!tab) return;
+      const panel = tab.dataset.vehTab;
+      $$('#overlay-vehicle-detail .modal-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.vehTab === panel);
+        t.setAttribute('aria-selected', t.dataset.vehTab === panel ? 'true' : 'false');
+      });
+      $$('#overlay-vehicle-detail [data-veh-panel]').forEach(p => {
+        p.hidden = p.dataset.vehPanel !== panel;
+      });
     });
 
     document.addEventListener('click', e => {
