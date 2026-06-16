@@ -33,6 +33,7 @@ const App = (() => {
     if (view === 'analytics') renderAnalytics();
     if (view === 'drivers')   renderDriverManagement();
     if (view === 'hub-ops')   renderHubOps();
+    if (view === 'customers') renderCustomerManagement();
   }
 
   const NAV_TITLES = {
@@ -43,7 +44,8 @@ const App = (() => {
     costs:     'Quản lý Nguồn lực & Chi phí',
     analytics: 'Phân tích Hiệu suất',
     drivers:   'Quản lý Tài xế',
-    'hub-ops': 'Hub Operations Console',
+    'hub-ops':   'Hub Operations Console',
+    customers:   'Quản lý Khách hàng',
   };
 
   /* ── Dashboard ── */
@@ -520,6 +522,145 @@ const App = (() => {
   const sidebar        = document.querySelector('.sidebar');
   const sidebarOverlay = $('sidebar-overlay');
 
+  /* ── Customer Management ── */
+  function renderCustomerManagement() {
+    renderCustomerCards();
+    $('customer-search')?.addEventListener('input', renderCustomerCards);
+    $('customer-filter-status')?.addEventListener('change', renderCustomerCards);
+  }
+
+  function renderCustomerCards() {
+    const search = ($('customer-search')?.value || '').toLowerCase();
+    const status = $('customer-filter-status')?.value || '';
+    const grid   = $('customer-cards');
+    if (!grid) return;
+
+    const filtered = DATA.customerProfiles.filter(c => {
+      const matchSearch = !search ||
+        c.name.toLowerCase().includes(search) ||
+        c.contactName.toLowerCase().includes(search) ||
+        c.industry.toLowerCase().includes(search);
+      const matchStatus = !status || c.status === status;
+      return matchSearch && matchStatus;
+    });
+
+    if (!filtered.length) {
+      grid.innerHTML = '<p style="color:var(--color-on-surface-variant);grid-column:1/-1">Không tìm thấy khách hàng phù hợp.</p>';
+      return;
+    }
+
+    const creditUsedPct = c => Math.round((c.outstanding / c.creditLimit) * 100);
+    const slaOk = c => c.slaActual >= c.slaTarget;
+
+    grid.innerHTML = filtered.map(c => `
+      <div class="card customer-card js-customer-open" role="button" tabindex="0" data-cust-id="${c.id}">
+        <div class="customer-card__header">
+          <div class="customer-avatar customer-avatar--${c.id.toLowerCase().replace('-','')}">${c.initials}</div>
+          <div style="flex:1;min-width:0">
+            <p class="customer-card__name">${c.name}</p>
+            <p class="customer-card__industry">${c.industry}</p>
+          </div>
+          <span class="chip ${c.status === 'active' ? 'chip--success' : 'chip--neutral'}">
+            ${c.status === 'active' ? 'Hoạt động' : 'Ngừng'}
+          </span>
+        </div>
+        <div class="customer-card__stats">
+          <div class="customer-card__stat">
+            <p class="customer-card__stat-val">${c.containersThisMonth}</p>
+            <p class="customer-card__stat-label">Cont tháng này</p>
+          </div>
+          <div class="customer-card__stat">
+            <p class="customer-card__stat-val ${slaOk(c) ? 'text-success' : 'text-error'}">${c.slaActual}%</p>
+            <p class="customer-card__stat-label">SLA thực tế</p>
+          </div>
+          <div class="customer-card__stat">
+            <p class="customer-card__stat-val">${(c.outstanding / 1e6).toFixed(1)}M</p>
+            <p class="customer-card__stat-label">Dư nợ (VNĐ)</p>
+          </div>
+        </div>
+        <div style="margin-top:var(--space-12)">
+          <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--color-on-surface-variant);margin-bottom:4px">
+            <span>Hạn mức tín dụng</span>
+            <span>${creditUsedPct(c)}%</span>
+          </div>
+          <div class="progress" style="height:6px">
+            <div class="progress__bar ${creditUsedPct(c) >= 80 ? 'progress__bar--warn' : ''}"
+              style="height:6px;width:${creditUsedPct(c)}%"></div>
+          </div>
+        </div>
+        <div style="margin-top:var(--space-12);display:flex;gap:var(--space-4);flex-wrap:wrap">
+          ${c.flows.map(f => `<span class="chip chip--neutral" style="font-size:10px;padding:1px 6px">${f}</span>`).join('')}
+        </div>
+      </div>`).join('');
+  }
+
+  function openCustomerProfile(cust) {
+    const fmt = n => n.toLocaleString('vi') + ' ₫';
+    const pct = Math.round((cust.outstanding / cust.creditLimit) * 100);
+
+    $('cust-modal-avatar').textContent  = cust.initials;
+    $('cust-modal-avatar').className    = `customer-avatar customer-avatar--lg customer-avatar--${cust.id.toLowerCase().replace('-','')}`;
+    $('cust-modal-name').textContent    = cust.name;
+    $('cust-modal-industry').textContent = cust.industry;
+    $('cust-modal-id').textContent      = cust.id;
+    $('cust-modal-status-chip').innerHTML = `<span class="chip ${cust.status === 'active' ? 'chip--success' : 'chip--neutral'}">${cust.status === 'active' ? 'Hoạt động' : 'Ngừng'}</span>`;
+
+    $('cust-contact-name').textContent  = cust.contactName;
+    $('cust-contact-phone').textContent = cust.contactPhone;
+    $('cust-contact-email').textContent = cust.contactEmail;
+    $('cust-address').textContent       = cust.address;
+    $('cust-tax-code').textContent      = cust.taxCode;
+    $('cust-flows').innerHTML           = cust.flows.map(f => `<span class="chip chip--neutral" style="font-size:11px;margin-right:4px">${f}</span>`).join('');
+
+    const maxVol = Math.max(...cust.monthlyVolume);
+    const months = ['T1','T2','T3','T4','T5','T6'];
+    const barArea   = cust.monthlyVolume.map((v, i) => `<div style="flex:1;background:var(--color-info-text);border-radius:3px 3px 0 0;height:${Math.round((v/maxVol)*56)}px;opacity:${0.35+(i/cust.monthlyVolume.length)*0.65}"></div>`).join('');
+    const labelArea = months.map(m => `<span style="flex:1;text-align:center;font-size:10px;color:var(--color-on-surface-variant)">${m}</span>`).join('');
+    const numArea   = cust.monthlyVolume.map(v => `<span style="flex:1;text-align:center;font-size:10px;font-weight:600;color:var(--color-on-surface)">${v}</span>`).join('');
+    $('cust-volume-chart').innerHTML =
+      `<div style="display:flex;align-items:flex-end;gap:var(--space-8);height:56px">${barArea}</div>
+       <div style="display:flex;gap:var(--space-8);margin-top:6px">${labelArea}</div>
+       <div style="display:flex;gap:var(--space-8);margin-top:2px">${numArea}</div>`;
+
+    $('cust-contract-start').textContent = cust.contractStart;
+    $('cust-contract-end').textContent   = cust.contractEnd;
+    $('cust-credit-limit').textContent   = fmt(cust.creditLimit);
+    $('cust-outstanding').textContent    = fmt(cust.outstanding);
+    $('cust-credit-bar').style.width     = pct + '%';
+    $('cust-credit-bar').className       = `progress__bar ${pct >= 80 ? 'progress__bar--warn' : ''}`;
+    $('cust-credit-pct').textContent     = `${pct}% hạn mức đã dùng`;
+
+    $('cust-orders-tbody').innerHTML = cust.recentOrders.map(o => `<tr>
+      <td><span class="cont-id">${o.contId}</span></td>
+      <td>${o.type}</td>
+      <td>${o.size}</td>
+      <td>${o.route}</td>
+      <td>${UI.chip(o.status, o.statusType, false)}</td>
+      <td>${o.date}</td>
+    </tr>`).join('');
+
+    $('cust-kpi-ontime').textContent     = cust.kpis.onTimeRate + '%';
+    $('cust-kpi-ontime-bar').style.width = cust.kpis.onTimeRate + '%';
+    $('cust-kpi-ontime-bar').className   = `progress__bar ${cust.kpis.onTimeRate >= cust.slaTarget ? '' : 'progress__bar--warn'}`;
+    $('cust-kpi-sla-target').textContent = cust.slaTarget + '%';
+    $('cust-kpi-lead').textContent       = cust.kpis.avgLeadDays;
+    $('cust-kpi-damage').textContent     = cust.kpis.damageRate + '%';
+    $('cust-kpi-return').textContent     = cust.kpis.returnRate + '%';
+    $('cust-kpi-this-month').textContent = cust.containersThisMonth + ' cont';
+    $('cust-kpi-total').textContent      = cust.totalContainers + ' cont';
+
+    $$('#overlay-customer-profile .modal-tab').forEach(t => {
+      const sel = t.dataset.custTab === 'info';
+      t.classList.toggle('active', sel);
+      t.setAttribute('aria-selected', sel ? 'true' : 'false');
+    });
+    $$('#overlay-customer-profile [data-cust-panel]').forEach(p => {
+      p.hidden = p.dataset.custPanel !== 'info';
+    });
+
+    $('overlay-customer-profile').classList.add('open');
+  }
+
   /* ── Hub Operations Console ── */
   let currentHub = 'kcn-lon';
   let currentQueue = 'incoming';
@@ -849,6 +990,34 @@ const App = (() => {
       const view = tab.dataset.sysTab;
       $$('[data-sys-tab]').forEach(t => t.classList.toggle('active', t.dataset.sysTab === view));
       $$('[data-sys-panel]').forEach(p => p.hidden = p.dataset.sysPanel !== view);
+    });
+
+    document.addEventListener('click', e => {
+      const card = e.target.closest('.js-customer-open');
+      if (!card) return;
+      const cust = DATA.customerProfiles.find(c => c.id === card.dataset.custId);
+      if (cust) openCustomerProfile(cust);
+    });
+
+    document.addEventListener('keydown', e => {
+      if ((e.key === 'Enter' || e.key === ' ') && e.target.classList.contains('js-customer-open')) {
+        e.preventDefault();
+        const cust = DATA.customerProfiles.find(c => c.id === e.target.dataset.custId);
+        if (cust) openCustomerProfile(cust);
+      }
+    });
+
+    document.addEventListener('click', e => {
+      const tab = e.target.closest('[data-cust-tab]');
+      if (!tab) return;
+      const panel = tab.dataset.custTab;
+      $$('#overlay-customer-profile .modal-tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.custTab === panel);
+        t.setAttribute('aria-selected', t.dataset.custTab === panel ? 'true' : 'false');
+      });
+      $$('#overlay-customer-profile [data-cust-panel]').forEach(p => {
+        p.hidden = p.dataset.custPanel !== panel;
+      });
     });
 
     document.addEventListener('click', e => {
