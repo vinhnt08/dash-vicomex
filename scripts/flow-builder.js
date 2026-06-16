@@ -30,7 +30,7 @@ const FlowBuilder = (() => {
   /* ── PICKER DATA ─────────────────────────────────────────────── */
   const PICKER_ICON = {
     depot: 'garage', port: 'directions_boat', hub: 'warehouse',
-    customer: 'storefront', truck: 'local_shipping',
+    customer: 'storefront', driver: 'person', truck: 'local_shipping',
     trailer: 'rv_hookup', container: 'inventory_2',
   };
 
@@ -41,7 +41,8 @@ const FlowBuilder = (() => {
       case 'port':     return locations.filter(l => l.type === 'port').map(l => ({ sourceId: l.id, label: l.label, sub: '' }));
       case 'hub':      return locations.filter(l => l.type === 'hub').map(l => ({ sourceId: l.id, label: l.label, sub: '' }));
       case 'customer': return locations.filter(l => l.type === 'customer').map(l => ({ sourceId: l.id, label: l.label, sub: '' }));
-      case 'truck':    return trucks.filter(t => t.status === 'active').map(t => ({ sourceId: t.id, label: t.plate, sub: t.driver }));
+      case 'driver':   return DATA.driverProfiles.map(d => ({ sourceId: d.id, label: d.name, sub: d.team }));
+      case 'truck':    return trucks.filter(t => t.status === 'active').map(t => ({ sourceId: t.id, label: t.plate, sub: t.team }));
       case 'trailer':  return systemData.trailers.filter(t => t.status === 'active').map(t => ({ sourceId: t.id, label: t.id, sub: t.axles }));
       case 'container': return [...importContainers, ...exportContainers].map(c => ({ sourceId: c.id, label: c.id, sub: c.client + (c.laden ? ' · ' + c.laden : '') }));
       default: return [];
@@ -61,6 +62,12 @@ const FlowBuilder = (() => {
           { type: 'port',     label: 'Cảng',     icon: 'directions_boat' },
           { type: 'hub',      label: 'Hub',      icon: 'warehouse' },
           { type: 'customer', label: 'Kho KH',   icon: 'storefront' },
+        ],
+      },
+      {
+        title: 'Nhân sự',
+        items: [
+          { type: 'driver', label: 'Tài Xế', icon: 'person' },
         ],
       },
       {
@@ -145,10 +152,8 @@ const FlowBuilder = (() => {
           const el = document.getElementById(`tmpl-flows-${d}`);
           if (el) el.style.display = d === dir ? '' : 'none';
         });
-        if (dir === 'custom') {
-          state.template = null;
-          container.querySelectorAll('.template-flow-card').forEach(c => c.classList.remove('active'));
-        }
+        state.template = null;
+        container.querySelectorAll('.template-flow-card').forEach(c => c.classList.remove('active'));
       });
     });
 
@@ -176,17 +181,42 @@ const FlowBuilder = (() => {
     clearCanvas();
     state.template = { id: tmpl.id, direction };
 
+    const xOffset = tmpl.nodes.some(n => n.type === 'truck') ? 165 : 0;
+
     const keyToId = {};
     tmpl.nodes.forEach(n => {
-      const node = {
-        id: `n${++state.counter}`,
-        type: n.type, label: n.label, icon: n.icon,
-        sub: '', picked: false, sourceId: null,
-        x: n.x, y: n.y,
-      };
-      keyToId[n.key] = node.id;
-      state.nodes.push(node);
-      mountNode(node);
+      if (n.type === 'truck') {
+        const driverNodeId = `n${++state.counter}`;
+        const truckNode = {
+          id: `n${++state.counter}`,
+          type: n.type, label: n.label, icon: n.icon,
+          sub: '', picked: false, sourceId: null,
+          x: n.x + xOffset, y: n.y,
+          companionDriverId: driverNodeId,
+        };
+        const driverNode = {
+          id: driverNodeId,
+          type: 'driver', icon: 'person', label: 'Tài xế', sub: '',
+          picked: false, sourceId: null,
+          x: Math.max(8, truckNode.x - 172), y: truckNode.y,
+          companionTruckId: truckNode.id,
+        };
+        keyToId[n.key] = truckNode.id;
+        state.nodes.push(driverNode, truckNode);
+        state.edges.push({ id: `e${++state.counter}`, from: driverNode.id, to: truckNode.id });
+        mountNode(driverNode);
+        mountNode(truckNode);
+      } else {
+        const node = {
+          id: `n${++state.counter}`,
+          type: n.type, label: n.label, icon: n.icon,
+          sub: '', picked: false, sourceId: null,
+          x: n.x + xOffset, y: n.y,
+        };
+        keyToId[n.key] = node.id;
+        state.nodes.push(node);
+        mountNode(node);
+      }
     });
 
     tmpl.edges.forEach(e => {
@@ -287,6 +317,7 @@ const FlowBuilder = (() => {
       el.appendChild(subEl);
     }
     if (subEl) subEl.textContent = sub || '';
+
   }
 
   /* ── CANVAS EVENTS ───────────────────────────────────────────── */
@@ -324,17 +355,43 @@ const FlowBuilder = (() => {
     const icon  = e.dataTransfer.getData('icon')  || PICKER_ICON[type] || 'help';
     const label = e.dataTransfer.getData('label') || TYPE_LABELS[type] || type;
 
-    const node = {
-      id: `n${++state.counter}`,
-      type, icon, label, sub: '',
-      picked: false, sourceId: null,
-      x: Math.max(8, e.clientX - rect.left - 54),
-      y: Math.max(8, e.clientY - rect.top  - 44),
-    };
-    state.nodes.push(node);
-    mountNode(node);
-    updateEmpty();
-    openPicker(node.id);
+    const x = Math.max(8, e.clientX - rect.left - 54);
+    const y = Math.max(8, e.clientY - rect.top  - 44);
+
+    if (type === 'truck') {
+      const driverNode = {
+        id: `n${++state.counter}`,
+        type: 'driver', icon: 'person', label: 'Tài xế', sub: '',
+        picked: false, sourceId: null,
+        x: Math.max(8, x - 172), y,
+      };
+      const truckNode = {
+        id: `n${++state.counter}`,
+        type, icon, label, sub: '',
+        picked: false, sourceId: null,
+        x, y,
+        companionDriverId: driverNode.id,
+      };
+      driverNode.companionTruckId = truckNode.id;
+      state.nodes.push(driverNode, truckNode);
+      state.edges.push({ id: `e${++state.counter}`, from: driverNode.id, to: truckNode.id });
+      mountNode(driverNode);
+      mountNode(truckNode);
+      updateEmpty();
+      redrawEdges();
+      openPicker(truckNode.id);
+    } else {
+      const node = {
+        id: `n${++state.counter}`,
+        type, icon, label, sub: '',
+        picked: false, sourceId: null,
+        x, y,
+      };
+      state.nodes.push(node);
+      mountNode(node);
+      updateEmpty();
+      openPicker(node.id);
+    }
   }
 
   /* ── TOOLBAR ─────────────────────────────────────────────────── */
@@ -695,10 +752,10 @@ const FlowBuilder = (() => {
 
   const TYPE_LABELS = {
     depot: 'Depot', port: 'Cảng', hub: 'Hub', customer: 'Kho KH',
-    truck: 'Đầu kéo', trailer: 'Rơ mooc', container: 'Container',
+    driver: 'Tài xế', truck: 'Đầu kéo', trailer: 'Rơ mooc', container: 'Container',
   };
 
-  const VEHICLE_TYPES = new Set(['truck', 'trailer']);
+  const VEHICLE_TYPES = new Set(['driver', 'truck', 'trailer']);
 
   function validateEdge(fromId, toId) {
     const from = state.nodes.find(n => n.id === fromId);
@@ -712,8 +769,10 @@ const FlowBuilder = (() => {
       return { valid: false, msg: `"${from.label}" (container) không thể tạo chặng.` };
     if (!toIsVehicle && !LOCATION_TYPES.has(to.type))
       return { valid: false, msg: `"${to.label}" (container) không thể tạo chặng.` };
-    if (fromIsVehicle && toIsVehicle)
+    if (fromIsVehicle && toIsVehicle) {
+      if (from.type === 'driver' && to.type === 'truck') return { valid: true };
       return { valid: false, msg: 'Không thể nối hai phương tiện với nhau.' };
+    }
 
     if (LOCATION_TYPES.has(from.type) && LOCATION_TYPES.has(to.type)) {
       const allowed = VALID_EDGES.get(from.type);
@@ -875,6 +934,7 @@ const FlowBuilder = (() => {
     state.drawing  = null;
     state.dragging = null;
     state.editMode = null;
+    state.template = null;
     document.querySelectorAll('#flow-canvas .flow-node').forEach(el => el.remove());
     document.getElementById('fb-drawing-line')?.remove();
     closePicker();
@@ -1074,6 +1134,7 @@ const FlowBuilder = (() => {
     const { errors, warnings } = validateFlow();
     if (errors.length > 0) { showToast(errors[0], 'error'); return; }
 
+    const drivers    = state.nodes.filter(n => n.type === 'driver');
     const vehicles   = state.nodes.filter(n => n.type === 'truck');
     const trailers   = state.nodes.filter(n => n.type === 'trailer');
     const containers = state.nodes.filter(n => n.type === 'container');
@@ -1114,6 +1175,7 @@ const FlowBuilder = (() => {
             <p class="label-caps" style="color:var(--color-on-surface-variant);margin-bottom:var(--space-8)">Lộ trình (${state.edges.length} chặng)</p>
             ${state.edges.length ? `<div id="flow-route-rows-container"></div>` : '<p style="font-size:13px;color:var(--color-on-surface-variant)">Chưa kết nối node nào</p>'}
           </div>
+          ${drivers.length    ? `<div><p class="label-caps" style="color:var(--color-on-surface-variant);margin-bottom:4px">Tài xế</p><div style="display:flex;flex-wrap:wrap">${tagRow(drivers)}</div></div>` : ''}
           ${vehicles.length   ? `<div><p class="label-caps" style="color:var(--color-on-surface-variant);margin-bottom:4px">Đầu kéo</p><div style="display:flex;flex-wrap:wrap">${tagRow(vehicles)}</div></div>` : ''}
           ${trailers.length   ? `<div><p class="label-caps" style="color:var(--color-on-surface-variant);margin-bottom:4px">Rơ mooc</p><div style="display:flex;flex-wrap:wrap">${tagRow(trailers)}</div></div>` : ''}
           ${containers.length ? `<div><p class="label-caps" style="color:var(--color-on-surface-variant);margin-bottom:4px">Container</p><div style="display:flex;flex-wrap:wrap">${tagRow(containers)}</div></div>` : ''}
