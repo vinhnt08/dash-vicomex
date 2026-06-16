@@ -34,6 +34,7 @@ const App = (() => {
     if (view === 'drivers')   renderDriverManagement();
     if (view === 'hub-ops')   renderHubOps();
     if (view === 'customers') renderCustomerManagement();
+    if (view === 'reports')   renderReports();
   }
 
   const NAV_TITLES = {
@@ -46,6 +47,7 @@ const App = (() => {
     drivers:   'Quản lý Tài xế',
     'hub-ops':   'Hub Operations Console',
     customers:   'Quản lý Khách hàng',
+    reports:     'Báo cáo & Xuất dữ liệu',
   };
 
   /* ── Dashboard ── */
@@ -522,6 +524,170 @@ const App = (() => {
   const sidebar        = document.querySelector('.sidebar');
   const sidebarOverlay = $('sidebar-overlay');
 
+  /* ── Reports ── */
+  let currentReportPeriod = 'month';
+
+  function renderReports() {
+    renderReportKPIs(currentReportPeriod);
+    renderReportVolumeChart();
+    renderReportBreakdowns();
+    renderReportRoutes();
+    renderReportBreakdownTable();
+  }
+
+  function renderReportKPIs(period) {
+    const s    = DATA.reports.summary[period];
+    const cards = $('report-kpi-cards');
+    if (!cards) return;
+
+    const trend = (cur, prev, unit = '', invert = false) => {
+      const pct  = prev ? Math.round(((cur - prev) / prev) * 100) : 0;
+      const good = invert ? pct < 0 : pct >= 0;
+      const sign = pct >= 0 ? '+' : '';
+      return `<span class="report-kpi__trend report-kpi__trend--${good ? 'good' : 'bad'}">
+        <span class="material-symbols-outlined">${good ? 'trending_up' : 'trending_down'}</span>
+        ${sign}${pct}% vs kỳ trước
+      </span>`;
+    };
+
+    const fmtRevenue = v => (v / 1e9).toFixed(2) + ' tỷ';
+
+    cards.innerHTML = [
+      { label: 'Tổng Cont vận chuyển', value: s.totalConts,    unit: 'cont', trendHtml: trend(s.totalConts, s.prevTotalConts) },
+      { label: 'Doanh thu ước tính',   value: fmtRevenue(s.revenue), unit: 'VNĐ', trendHtml: trend(s.revenue, s.prevRevenue) },
+      { label: 'Tỷ lệ đúng hạn TB',   value: s.onTimeRate + '%', unit: '',  trendHtml: trend(s.onTimeRate, s.prevOnTimeRate) },
+      { label: 'Tài xế hoạt động',     value: s.activeDrivers,  unit: 'người', trendHtml: trend(s.activeDrivers, s.prevActiveDrivers) },
+    ].map(k => `
+      <div class="card report-kpi">
+        <p class="report-kpi__label">${k.label}</p>
+        <p class="report-kpi__value">${k.value} <span class="report-kpi__unit">${k.unit}</span></p>
+        ${k.trendHtml}
+      </div>`).join('');
+  }
+
+  function renderReportVolumeChart() {
+    const el = $('report-volume-chart');
+    if (!el) return;
+    const allData = DATA.reports.monthly;
+    const activeData = allData.filter(d => d.conts > 0);
+    if (!activeData.length) { el.innerHTML = ''; return; }
+
+    const maxVal = Math.max(...activeData.map(d => d.conts));
+    const chartH = 120;
+    const W = 540, H = chartH + 20;
+    const padL = 8, padR = 8;
+    const slotW = (W - padL - padR) / activeData.length;
+
+    const points = activeData.map((d, i) => ({
+      x: padL + i * slotW + slotW / 2,
+      y: H - 20 - Math.round((d.conts / maxVal) * chartH),
+      d,
+    }));
+
+    const areaD = `M ${points[0].x} ${H - 20} ` +
+      points.map(p => `L ${p.x} ${p.y}`).join(' ') +
+      ` L ${points[points.length - 1].x} ${H - 20} Z`;
+
+    const bars = activeData.map((d, i) => {
+      const x  = padL + i * slotW;
+      const bH = Math.round((d.conts / maxVal) * chartH);
+      return `<rect x="${x + 4}" y="${H - 20 - bH}" width="${slotW - 8}" height="${bH}" rx="3"
+        style="fill:var(--color-primary);opacity:0.08"/>`;
+    }).join('');
+
+    const labels = activeData.map((d, i) => {
+      const x = padL + i * slotW + slotW / 2;
+      return `<text x="${x}" y="${H - 2}" text-anchor="middle" style="font-size:10px;fill:var(--color-on-surface-variant)">${d.month}</text>`;
+    }).join('');
+
+    const dots = points.map(p =>
+      `<circle cx="${p.x}" cy="${p.y}" r="3.5" style="fill:var(--color-primary)"/>
+       <text x="${p.x}" y="${p.y - 8}" text-anchor="middle" style="font-size:10px;font-weight:600;fill:var(--color-on-surface)">${p.d.conts}</text>`
+    ).join('');
+
+    el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:100%;overflow:visible" aria-hidden="true">
+      <defs>
+        <linearGradient id="rpt-area-grad" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"   style="stop-color:var(--color-primary);stop-opacity:0.15"/>
+          <stop offset="100%" style="stop-color:var(--color-primary);stop-opacity:0"/>
+        </linearGradient>
+      </defs>
+      <line x1="${padL}" y1="${H-20}" x2="${W-padR}" y2="${H-20}" style="stroke:var(--color-outline-variant);stroke-width:1"/>
+      ${bars}
+      <path d="${areaD}" style="fill:url(#rpt-area-grad)"/>
+      <polyline points="${points.map(p=>`${p.x},${p.y}`).join(' ')}" style="fill:none;stroke:var(--color-primary);stroke-width:2;stroke-linejoin:round;stroke-linecap:round"/>
+      ${dots}
+      ${labels}
+    </svg>`;
+  }
+
+  function renderReportBreakdowns() {
+    const clientEl = $('report-by-client');
+    const hubEl    = $('report-by-hub');
+    if (!clientEl || !hubEl) return;
+
+    clientEl.innerHTML = DATA.reports.byClient.map(c => `
+      <div style="margin-bottom:var(--space-12)">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+          <span style="font-weight:500;color:var(--color-on-surface)">${c.name}</span>
+          <span style="color:var(--color-on-surface-variant)">${c.conts} cont · ${c.pct}%</span>
+        </div>
+        <div class="progress" style="height:8px">
+          <div class="progress__bar" style="height:8px;width:${c.pct}%"></div>
+        </div>
+      </div>`).join('');
+
+    hubEl.innerHTML = DATA.reports.byHub.map(h => `
+      <div style="margin-bottom:var(--space-12)">
+        <div style="display:flex;justify-content:space-between;font-size:13px;margin-bottom:4px">
+          <span style="font-weight:500;color:var(--color-on-surface)">${h.name}</span>
+          <span style="color:var(--color-on-surface-variant)">${h.conts} cont · ${h.pct}%</span>
+        </div>
+        <div class="progress" style="height:8px">
+          <div class="progress__bar" style="height:8px;width:${h.pct}%"></div>
+        </div>
+      </div>`).join('');
+  }
+
+  function renderReportRoutes() {
+    const tbody = $('report-routes-tbody');
+    if (!tbody) return;
+    tbody.innerHTML = DATA.reports.byRoute.map(r => `<tr>
+      <td>${r.route}</td>
+      <td><span class="chip ${r.type === 'Import' ? 'chip--info' : 'chip--success'}" style="font-size:11px">${r.type}</span></td>
+      <td>${r.conts}</td>
+      <td>
+        <div style="display:flex;align-items:center;gap:var(--space-8)">
+          <div class="progress" style="height:6px;width:80px">
+            <div class="progress__bar ${r.onTime < 93 ? 'progress__bar--warn' : ''}" style="height:6px;width:${r.onTime}%"></div>
+          </div>
+          <span style="font-size:12px;font-weight:600">${r.onTime}%</span>
+        </div>
+      </td>
+      <td>${r.avgDays}</td>
+    </tr>`).join('');
+  }
+
+  function renderReportBreakdownTable() {
+    const tbody = $('report-breakdown-tbody');
+    if (!tbody) return;
+    const rows  = DATA.reports.monthlyBreakdown;
+    const total = rows.reduce((s, r) => s + r.total, 0);
+    tbody.innerHTML = rows.map(r => `<tr>
+      <td>${r.month}</td>
+      <td>${r.alpha}</td>
+      <td>${r.beta}</td>
+      <td>${r.gamma}</td>
+      <td><strong>${r.total}</strong></td>
+    </tr>`).join('') + `<tr style="background:var(--color-surface-container);font-weight:600">
+      <td>Tổng cộng</td>
+      <td>${rows.reduce((s,r)=>s+r.alpha,0)}</td>
+      <td>${rows.reduce((s,r)=>s+r.beta,0)}</td>
+      <td>${rows.reduce((s,r)=>s+r.gamma,0)}</td>
+      <td><strong>${total}</strong></td>
+    </tr>`;
+  }
+
   /* ── Customer Management ── */
   function renderCustomerManagement() {
     renderCustomerCards();
@@ -990,6 +1156,24 @@ const App = (() => {
       const view = tab.dataset.sysTab;
       $$('[data-sys-tab]').forEach(t => t.classList.toggle('active', t.dataset.sysTab === view));
       $$('[data-sys-panel]').forEach(p => p.hidden = p.dataset.sysPanel !== view);
+    });
+
+    document.addEventListener('click', e => {
+      const btn = e.target.closest('[data-report-period]');
+      if (!btn) return;
+      currentReportPeriod = btn.dataset.reportPeriod;
+      $$('[data-report-period]').forEach(t => {
+        t.classList.toggle('active', t.dataset.reportPeriod === currentReportPeriod);
+        t.setAttribute('aria-selected', t.dataset.reportPeriod === currentReportPeriod ? 'true' : 'false');
+      });
+      renderReportKPIs(currentReportPeriod);
+    });
+
+    $('btn-export-pdf')?.addEventListener('click', () => {
+      alert('Đang xuất báo cáo PDF… (chức năng demo)');
+    });
+    $('btn-export-excel')?.addEventListener('click', () => {
+      alert('Đang xuất báo cáo Excel… (chức năng demo)');
     });
 
     document.addEventListener('click', e => {

@@ -76,6 +76,12 @@
           <span>Khách hàng</span>
         </a>
       </li>
+      <li>
+        <a class="nav-item" role="button" tabindex="0" data-view="reports">
+          <span class="material-symbols-outlined" aria-hidden="true">summarize</span>
+          <span>Báo cáo</span>
+        </a>
+      </li>
     </ul>
 
     <div class="sidebar__footer">
@@ -839,6 +845,110 @@
     </div>
 
     <!-- ─────────────────────────────
+         VIEW: REPORTS
+    ───────────────────────────── -->
+    <div class="view" id="view-reports">
+      <main class="page page--surface" aria-label="Báo cáo & Xuất dữ liệu">
+
+        <div class="page-header">
+          <div class="page-header__left">
+            <h2 class="page-header__title">Báo cáo & Xuất dữ liệu</h2>
+            <p class="page-header__subtitle">Tổng hợp hiệu suất vận hành theo kỳ.</p>
+          </div>
+          <div style="display:flex;gap:var(--space-8)">
+            <button class="btn btn--secondary" id="btn-export-pdf">
+              <span class="material-symbols-outlined">picture_as_pdf</span>
+              Xuất PDF
+            </button>
+            <button class="btn btn--primary" id="btn-export-excel">
+              <span class="material-symbols-outlined">table_view</span>
+              Xuất Excel
+            </button>
+          </div>
+        </div>
+
+        <!-- Period selector -->
+        <div class="tabs" id="report-period-tabs" style="margin-bottom:var(--space-24)" role="tablist">
+          <button class="tab active" data-report-period="month"   role="tab" aria-selected="true">Tháng này</button>
+          <button class="tab"        data-report-period="quarter" role="tab" aria-selected="false">Quý này</button>
+          <button class="tab"        data-report-period="year"    role="tab" aria-selected="false">Năm nay</button>
+        </div>
+
+        <!-- KPI summary row -->
+        <div class="grid-4 anim-stagger" id="report-kpi-cards" style="margin-bottom:var(--space-24)"></div>
+
+        <!-- Charts row -->
+        <div class="grid-8-4" style="margin-bottom:var(--space-24)">
+
+          <!-- Left: volume trend chart -->
+          <div class="card">
+            <div class="card__header">
+              <h2 class="card__title">Volume theo tháng</h2>
+              <span class="chip chip--neutral" style="font-size:11px" id="report-chart-label">2026</span>
+            </div>
+            <div id="report-volume-chart" style="margin-top:var(--space-16)"></div>
+          </div>
+
+          <!-- Right: breakdown -->
+          <div style="display:flex;flex-direction:column;gap:var(--space-16)">
+            <div class="card">
+              <h2 class="card__title" style="margin-bottom:var(--space-16)">Theo Khách hàng</h2>
+              <div id="report-by-client"></div>
+            </div>
+            <div class="card">
+              <h2 class="card__title" style="margin-bottom:var(--space-16)">Theo Hub</h2>
+              <div id="report-by-hub"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Routes table -->
+        <div class="card" style="margin-bottom:var(--space-24);padding:0;overflow:hidden">
+          <div class="card__header">
+            <h2 class="card__title">Top tuyến đường</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="table" aria-label="Top tuyến đường">
+              <thead>
+                <tr>
+                  <th>Tuyến đường</th>
+                  <th>Loại</th>
+                  <th>Số Cont</th>
+                  <th>Tỷ lệ đúng hạn</th>
+                  <th>Thời gian TB (ngày)</th>
+                </tr>
+              </thead>
+              <tbody id="report-routes-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Monthly breakdown table -->
+        <div class="card" style="padding:0;overflow:hidden">
+          <div class="card__header">
+            <h2 class="card__title">Chi tiết theo tháng</h2>
+          </div>
+          <div class="table-wrap">
+            <table class="table" aria-label="Chi tiết theo tháng">
+              <thead>
+                <tr>
+                  <th>Tháng</th>
+                  <th>Client Alpha</th>
+                  <th>Client Beta</th>
+                  <th>Client Gamma</th>
+                  <th>Tổng</th>
+                </tr>
+              </thead>
+              <tbody id="report-breakdown-tbody"></tbody>
+            </table>
+          </div>
+        </div>
+
+      </main>
+    </div>
+
+    <!-- ─────────────────────────────
          VIEW: DRIVER MANAGEMENT
     ───────────────────────────── -->
     <div class="view" id="view-drivers">
@@ -1573,6 +1683,7 @@
 <script src="scripts/data/drivers.js" defer></script>
 <script src="scripts/data/hubs.js" defer></script>
 <script src="scripts/data/customers.js" defer></script>
+<script src="scripts/data/reports.js" defer></script>
 <script src="scripts/data/dashboard.js" defer></script>
 <script src="scripts/data/containers.js" defer></script>
 <script src="scripts/data/resources.js" defer></script>

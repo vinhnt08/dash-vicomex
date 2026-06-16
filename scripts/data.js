@@ -6,5 +6,6 @@ const DATA = {
   ...DATA_DRIVERS,
   ...DATA_HUBS_OPS,
   ...DATA_CUSTOMERS,
+  ...DATA_REPORTS,
   templates: DATA_TEMPLATES,
 };
